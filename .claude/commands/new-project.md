@@ -73,7 +73,7 @@ Ask (or deduce from the directory): does the project start from scratch or does 
 
 If something does not show up, guide the user: `/mcp` to authenticate the OAuth ones, or `claude mcp reset-project-choices` and reopen. Do not try to install anything yourself.
 
-**4b. Suggest optionals by group** — open `.claude/mcp-catalog.md` ("Suggestions by group" table) and propose via AskUserQuestion (multiSelect) the MCPs for the group on line 3 of ABOUT.md — e.g. E-commerce → stripe, resend, meta-ads; Site → analytics-mcp, gsc. For each accepted one: copy the EXACT snippet from the catalog into `mcpServers` in the project's `.mcp.json` and warn: new servers load on the NEXT session; OAuth is resolved with `/mcp`; the ones requiring env vars are flagged in the catalog. None accepted = move on, they can be added later.
+**4b. Suggest optionals by group** — open `.claude/mcp-catalog.md` ("Suggestion by project group" table) and propose via AskUserQuestion (multiSelect) the MCPs for the group on line 3 of ABOUT.md — e.g. E-commerce → stripe, resend, meta-ads; Site → analytics-mcp, gsc. For each accepted one: copy the EXACT snippet from the catalog into `mcpServers` in the project's `.mcp.json` and warn: new servers load on the NEXT session; OAuth is resolved with `/mcp`; the ones requiring env vars are flagged in the catalog. None accepted = move on, they can be added later.
 
 ## Step 5 — Superpowers (if the `## Process` section of ABOUT.md says ACTIVE)
 

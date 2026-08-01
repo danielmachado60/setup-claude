@@ -1,4 +1,4 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyPluginCallback } from 'fastify';
 
 /** Health check response body. */
 interface HealthResponse {
@@ -14,9 +14,10 @@ interface HealthResponse {
  * Reference example for the routes layer: a route validates and delegates
  * to src/services/, it never contains business logic or data access.
  */
-export async function healthRoutes(app: FastifyInstance): Promise<void> {
-  app.get('/health', async (): Promise<HealthResponse> => ({
+export const healthRoutes: FastifyPluginCallback = (app, _opts, done) => {
+  app.get('/health', (): HealthResponse => ({
     status: 'ok',
     time: new Date().toISOString(),
   }));
-}
+  done();
+};
