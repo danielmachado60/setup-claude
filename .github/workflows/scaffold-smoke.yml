@@ -21,8 +21,8 @@ jobs:
     name: hooks & configs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 24 }
       - name: JSON configs parse
         run: node -e "require('./.claude/settings.json'); require('./.mcp.json'); console.log('ok')"
@@ -52,8 +52,8 @@ jobs:
     name: pack node-api
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 24 }
       - name: Apply scaffold per SCAFFOLD.md
         run: |
@@ -76,8 +76,8 @@ jobs:
     name: pack static
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 24 }
       - name: Serve and verify
         run: |
@@ -85,7 +85,11 @@ jobs:
           cd /tmp/site && rm SCAFFOLD.md
           node --check js/main.js
           npx -y http-server -p 8481 --silent &
-          sleep 3
+          for i in $(seq 1 20); do
+            sleep 2
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8481/ || true)
+            [ "$code" = "200" ] && break
+          done
           for path in / /404.html /css/main.css /js/main.js; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8481$path")
             echo "GET $path -> $code"; test "$code" = "200"
@@ -97,8 +101,8 @@ jobs:
     name: pack nextjs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with: { node-version: 24 }
       - name: create-next-app + scaffold overlay per SCAFFOLD.md
         run: |
@@ -141,13 +145,15 @@ jobs:
     name: pack python
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v5
+        with: { enable-cache: false }
       - name: uv init + scaffold overlay per SCAFFOLD.md
         run: |
           cd /tmp && uv init testapi && cd testapi
           SC="$GITHUB_WORKSPACE/.claude/packs/python/scaffold"
           cp "$SC/pyproject.toml" . && sed -i 's/^name = .*/name = "testapi"/' pyproject.toml
+          uv python pin 3.13
           rm -rf src main.py; mkdir -p src
           cp -r "$SC/src/app" src/app
           cp -r "$SC/tests" tests
