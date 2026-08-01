@@ -88,6 +88,7 @@ Finish by showing a checklist with real status (done / skipped / pending):
 - [ ] `## Project commands` section of ABOUT.md with real commands and local URL
 - [ ] Base MCPs verified (playwright, context7, github, supabase, sentry — the ones the project doesn't use removed) and group optionals added to `.mcp.json` (or pending item noted)
 - [ ] Superpowers: installed by the user / declined / waiting — per the `## Process` section of ABOUT.md
+- [ ] Client project? Delete the template's .github/ folder (issue templates belong to Setup Claude, not to the client repo) and replace the root README.md with the project's own
 - [ ] Next step: start working — the SessionStart hook injects ABOUT.md by itself every session; `/prime` only for a deep context reload
 
 ## Anti-patterns — never do
