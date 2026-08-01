@@ -13,13 +13,15 @@ How to create a Node.js API from scratch with the agency's conventions. Commands
 ## 1. Create the base
 
 1. Create the project folder and run `git init`.
-2. Copy **everything** from this scaffold to the root of the new project — except this `SCAFFOLD.md`:
+2. Copy **everything** from this scaffold to the root of the new project — except this `SCAFFOLD.md` — then **rename the two `*.template.json` files** (they carry the suffix only so editors don't type-check the template folder itself):
+   - `tsconfig.template.json` → `tsconfig.json`
+   - `tsconfig.build.template.json` → `tsconfig.build.json`
 
 | File                                 | Purpose                                                                                       |
 | ------------------------------------ | --------------------------------------------------------------------------------------------- |
 | `package.json`                       | ready-made scripts — **change the `name` field**                                              |
-| `tsconfig.json`                      | hardened strict typecheck of `src/` + `tests/` (does not emit)                                |
-| `tsconfig.build.json`                | production build — emits only `src/` to `dist/`                                               |
+| `tsconfig.template.json`             | → `tsconfig.json`: hardened strict typecheck of `src/` + `tests/` (does not emit)             |
+| `tsconfig.build.template.json`       | → `tsconfig.build.json`: production build — emits only `src/` to `dist/`                      |
 | `eslint.config.mjs`                  | flat config (the only format in ESLint 10) with type-checked rules                            |
 | `.prettierrc` / `.editorconfig`      | formatting                                                                                    |
 | `.env.example`                       | env template                                                                                  |
