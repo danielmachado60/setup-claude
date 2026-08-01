@@ -1,56 +1,52 @@
-# COMMANDS — Setup Claude cheat sheet
+# 🧭 Pocket guide
 
-> Quick-reference file for humans. Full details: `.claude/README.md`.
+> You don't need to memorize anything. This file answers one question —
+> **"what do I do now?"** Keep it around on day one; you'll stop needing it fast.
 
-## The 3 entry scenarios
+## Starting something?
 
-| Scenario | What to do |
+| Your situation | Do this |
 |---|---|
-| **New project** | Copy the template → open `wizard.html` in a browser → save `ABOUT.md` at the root → `claude` → `/new-project` (applies scaffold, configures MCPs) |
-| **Existing project** (client repo already has code) | Copy `.claude/`, `CLAUDE.md`, `.mcp.json` and `ABOUT.md` into the repo → `claude` → `/new-project` (reverse wizard: detects stack/commands on its own and asks only about the rest) |
-| **Improve an existing page** (sales page, landing, home) | Adopt the repo (row above) → `/audit <url or route>` → approve the plan → execute the quick wins |
+| 🆕 **Brand-new project** | Open `wizard.html` in your browser → fill in the briefing → save `ABOUT.md` at the root → run `claude` → type `/new-project` |
+| 📦 **Existing codebase** | Copy `.claude/`, `CLAUDE.md`, `.mcp.json` and `ABOUT.md` into the repo → `claude` → `/new-project` (it figures out the stack from the code by itself) |
+| 🔍 **A live page that needs improving** | `/audit <url or route>` — you get a prioritized action plan *before* anything is touched |
 
-## Commands
+## While you work: mostly, just talk
 
-| Command | When to use |
-|---|---|
-| `/new-project` | Once, when starting or adopting a project. Fills in/validates ABOUT.md, scaffold, MCPs |
-| `/audit [page]` | Conversion diagnosis of an existing page → prioritized plan (changes nothing without approval) |
-| `/design-review [pages]` | After implementing UI: screenshots at 3 widths + critique + fix loop |
-| `/review` | ALWAYS before delivering: code review + QA + a11y/perf + SEO → APPROVED or BLOCKED |
-| `/sync-docs` | After a structural change: updates tier2 docs + ABOUT.md (asks for confirmation) |
-| `/prime [focus]` | Only in a long session that lost context — the essentials load on their own at startup |
+Describe what you want in plain words — *"build the pricing section"*, *"the form
+doesn't submit"*, *"write the hero headline"*. The right specialist picks it up on
+its own. The commands below are the few moments YOU drive:
 
-## Creative pipeline (fires on its own, but good to know the order)
+| Type this | When | What you get |
+|---|---|---|
+| `/design-review` | UI built or changed | Claude *looks* at every page on 3 screen sizes and fixes what's off |
+| `/review` | Before delivering anything | Full inspection — verdict **APPROVED** or **BLOCKED**, no in-between |
+| `/sync-docs` | After a big structural change | Docs catch up with reality (always asks before writing) |
+| `/prime` | Long session losing the thread | Deep context reload |
 
-Landing/conversion page: **client-discovery** (research: customer voice, competitors) → **landing-blueprint** (section-by-section strategy) → **design-direction** (3 visual directions, you choose) → copy → UI → `/design-review` → `/review`.
+## Things that happen without you asking
 
-The copywriter and the ui-designer REFUSE conversion work without these documents — it is not bureaucracy, it is what separates a good page from a generic one.
+- 🚪 **Open a session** → the briefing (ABOUT.md) loads into context by itself.
+- ✍️ **Edit a file** → formatting runs by itself (when the project has Prettier).
+- 🔔 **Finish with unreviewed code** → one gentle "/review?" nudge per session. Just one.
 
-## What happens on its own (hooks)
+## Conversion pages (landing / sales) follow an order
 
-- **On session start**: ABOUT.md enters context automatically (nothing to paste).
-- **On file edit**: prettier runs on its own (if the project has a config).
-- **On finishing a response that touched code**: `/review` reminder (once per session).
+**Research → strategy → visual direction → copy → build → review.**
+You don't have to trigger it: the copywriter and the designer *refuse* to skip
+steps — that's what separates a page that converts from a pretty one. Trust the pipeline.
 
-## MCPs — reminders
+## If an MCP server shows ⚠ failed
 
-- OAuth pending? → `/mcp` and authorize in the browser (one time only).
-- Base setup requires on the machine: `GITHUB_PAT`; per Supabase project: `SUPABASE_PROJECT_REF`.
-- Adding an optional one (Stripe, Vercel, ads...): ready-made snippet in `.claude/mcp-catalog.md` → paste into `.mcp.json` → takes effect NEXT session.
+One-time fixes: run `/mcp` and log in (Sentry, Supabase) · export `GITHUB_PAT` on
+your machine (GitHub) · not using that server in this project? Just remove its block
+from `.mcp.json`.
 
-## Golden rules
+## The 3 rules that save you
 
-1. **ABOUT.md is the only file that changes per project.** CLAUDE.md is never edited.
-2. Switching stacks = editing line 2 of ABOUT.md (`Active pack: ...`). Monorepo/multi-stack: list with ` + ` (`Active pack: nextjs + node-api`).
-3. Line 4 of ABOUT.md (`Language: ...`) drives the language of everything client-facing; if `.claude/locales/<language>.md` exists, agents read it before copy/UI work.
-4. Nothing is "done" without an approved `/review`. New UI without `/design-review` is not done.
-5. `.env` is never read, pasted or committed. No exceptions.
+1. **ABOUT.md is the only file you ever edit.** Switching stacks = editing line 2
+   (`Active pack:` — lists allowed: `nextjs + node-api`).
+2. Nothing ships without `/review` saying APPROVED.
+3. `.env` is never read, pasted or committed. No exceptions.
 
-
-
-NEW:       gh repo create <client> --template <your-org>/<template-repo> --private --clone
-           → wizard.html → ABOUT.md → claude → /new-project
-EXISTING:  copy .claude/ + CLAUDE.md + .mcp.json + ABOUT.md into the repo → /new-project (reverse wizard)
-IMPROVE:   adopt the repo → /audit <page>
-EVOLUTION: improved something in a project? port it back to the template and commit — the template is versioned
+Lost? The full manual lives in [`.claude/README.md`](.claude/README.md).
