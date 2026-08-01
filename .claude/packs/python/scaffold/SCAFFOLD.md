@@ -45,6 +45,11 @@ uv add --dev pytest ruff mypy
 | `uv run ruff format .` | format (`--check` in CI) |
 | `uv run mypy` | types — strict, scope defined in `[tool.mypy]` |
 
+> **Windows note:** if `fastapi dev` crashes with `UnicodeEncodeError: 'charmap' codec...`,
+> the console encoding is the culprit (the CLI prints unicode). Fix once with
+> `setx PYTHONUTF8 1` (new shells) or prefix the command with `PYTHONUTF8=1`.
+> Verified on Windows 11 — the app itself is unaffected.
+
 ## 4. Post-scaffold checklist
 
 - [ ] `uv run fastapi dev src/app/main.py` starts and `GET http://127.0.0.1:8000/health` responds `{"status":"ok",...}`
