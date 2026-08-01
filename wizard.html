@@ -393,6 +393,47 @@
       color: var(--muted);
       line-height: 1.6;
     }
+    /* ===== View tabs (Briefing | Guide) ===== */
+    [hidden] { display: none !important; }
+    .view-tabs { display: flex; justify-content: center; margin: 0 0 1.6rem; }
+    .view-tabs .option-body { padding: .5rem 1.6rem; font-size: .95rem; }
+
+    /* ===== Guide view ===== */
+    .guide { display: grid; gap: 1.25rem; max-width: 980px; margin: 0 auto; }
+    .guide-grid { display: grid; gap: .9rem; }
+    @media (min-width: 760px) {
+      .guide-grid.three { grid-template-columns: repeat(3, 1fr); }
+      .guide-grid.two { grid-template-columns: 1fr 1fr; }
+    }
+    .tile {
+      border: 1px solid var(--border); border-radius: 11px;
+      background: var(--bg-inset); padding: .95rem 1.05rem;
+    }
+    .tile h3 { font-size: .95rem; margin: 0 0 .45rem; }
+    .tile p, .tile li { font-size: .86rem; color: var(--fg-soft); line-height: 1.55; }
+    .tile p { margin: 0; }
+    .tile ol { margin: .2rem 0 0 1.15rem; padding: 0; }
+    .tile li { margin: .3rem 0; }
+    .tile .when {
+      display: inline-block; font-size: .72rem; font-weight: 700;
+      color: var(--accent); background: var(--accent-soft);
+      border: 1px solid var(--accent-border); border-radius: 999px;
+      padding: .12rem .6rem; margin-bottom: .5rem;
+    }
+    .flow-line { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; font-weight: 600; font-size: .88rem; }
+    .flow-line .fstep { background: var(--bg-inset); border: 1px solid var(--border); border-radius: 999px; padding: .35rem .85rem; }
+    .flow-line .farrow { color: var(--muted); }
+    .auto-row { display: flex; gap: .7rem; align-items: baseline; padding: .55rem 0; border-bottom: 1px dashed var(--border); font-size: .9rem; }
+    .auto-row:last-child { border-bottom: none; }
+    .auto-row .emoji { flex: none; }
+    .rule { display: flex; gap: .8rem; margin: .65rem 0; font-size: .92rem; align-items: baseline; }
+    .rule .num {
+      flex: none; width: 24px; height: 24px; border-radius: 8px;
+      background: var(--accent); color: var(--accent-fg);
+      display: grid; place-items: center; font-size: .8rem; font-weight: 800;
+      transform: translateY(3px);
+    }
+    .guide-note { font-size: .85rem; color: var(--muted); margin: .3rem 0 0; }
   </style>
 </head>
 <body>
@@ -428,7 +469,19 @@
   </header>
 
   <div class="wrap">
-    <main>
+    <!-- View switcher: the wizard is the human hub — Briefing (form) and Guide (how to work). -->
+    <div class="segmented view-tabs" role="radiogroup" aria-label="View" data-i18n-aria="viewAria">
+      <span class="option">
+        <input type="radio" name="view" id="view-b" value="briefing" checked>
+        <label class="option-body" for="view-b" data-i18n="tabBriefing">✍️ Briefing</label>
+      </span>
+      <span class="option">
+        <input type="radio" name="view" id="view-g" value="guide">
+        <label class="option-body" for="view-g" data-i18n="tabGuide">📖 Guide</label>
+      </span>
+    </div>
+
+    <main id="briefingView">
       <!-- Column 1: form. Sections mirror the root ABOUT.md template headings 1:1. -->
       <form id="form" autocomplete="off">
 
@@ -683,6 +736,99 @@
         </p>
       </section>
     </main>
+
+    <!-- Guide view: the pocket guide, visual. Mirrors COMMANDS.md at the root. -->
+    <section id="guideView" class="guide" hidden>
+
+      <section class="card">
+        <div class="card-head"><span class="card-num" aria-hidden="true">🚀</span><h2 data-i18n="gStartTitle">Starting something?</h2></div>
+        <p class="card-sub" data-i18n="gStartSub">Find your situation — each one is a 3-step path.</p>
+        <div class="guide-grid three">
+          <div class="tile">
+            <h3 data-i18n="gNewTitle">🆕 Brand-new project</h3>
+            <ol>
+              <li data-i18n="gNew1">Fill in the Briefing tab (right here)</li>
+              <li data-i18n="gNew2">Save ABOUT.md in the project root</li>
+              <li data-i18n-html="gNew3">Run <code>claude</code> → type <code>/new-project</code></li>
+            </ol>
+          </div>
+          <div class="tile">
+            <h3 data-i18n="gExistTitle">📦 Existing codebase</h3>
+            <ol>
+              <li data-i18n-html="gExist1">Copy <code>.claude/</code>, <code>CLAUDE.md</code>, <code>.mcp.json</code> and <code>ABOUT.md</code> into the repo</li>
+              <li data-i18n-html="gExist2">Run <code>claude</code> → <code>/new-project</code></li>
+              <li data-i18n="gExist3">It reads the stack from the code and asks only the rest</li>
+            </ol>
+          </div>
+          <div class="tile">
+            <h3 data-i18n="gAuditTitle">🔍 A live page to improve</h3>
+            <ol>
+              <li data-i18n="gAudit1">Adopt the repo (previous card)</li>
+              <li data-i18n-html="gAudit2">Run <code>/audit &lt;url&gt;</code></li>
+              <li data-i18n="gAudit3">You get a prioritized plan before anything is touched</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-num" aria-hidden="true">💬</span><h2 data-i18n="gTalkTitle">While you work: mostly, just talk</h2></div>
+        <p class="card-sub" data-i18n="gTalkSub">Describe what you want in plain words — "build the pricing section", "the form doesn't submit". The right specialist picks it up on its own. You only drive these four moments:</p>
+        <div class="guide-grid two">
+          <div class="tile">
+            <span class="when" data-i18n="gCmd1When">UI built or changed</span>
+            <h3><code>/design-review</code></h3>
+            <p data-i18n="gCmd1What">Claude looks at every page on 3 screen sizes and fixes what's off.</p>
+          </div>
+          <div class="tile">
+            <span class="when" data-i18n="gCmd2When">Before delivering anything</span>
+            <h3><code>/review</code></h3>
+            <p data-i18n="gCmd2What">Full inspection — verdict APPROVED or BLOCKED, no in-between.</p>
+          </div>
+          <div class="tile">
+            <span class="when" data-i18n="gCmd3When">After a big structural change</span>
+            <h3><code>/sync-docs</code></h3>
+            <p data-i18n="gCmd3What">Docs catch up with reality — always asks before writing.</p>
+          </div>
+          <div class="tile">
+            <span class="when" data-i18n="gCmd4When">Long session losing the thread</span>
+            <h3><code>/prime</code></h3>
+            <p data-i18n="gCmd4What">Deep context reload.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-num" aria-hidden="true">✨</span><h2 data-i18n="gAutoTitle">Things that happen without you asking</h2></div>
+        <div>
+          <div class="auto-row"><span class="emoji" aria-hidden="true">🚪</span><span data-i18n="gAuto1">Open a session → the briefing (ABOUT.md) loads into context by itself.</span></div>
+          <div class="auto-row"><span class="emoji" aria-hidden="true">✍️</span><span data-i18n="gAuto2">Edit a file → formatting runs by itself (when the project has Prettier).</span></div>
+          <div class="auto-row"><span class="emoji" aria-hidden="true">🔔</span><span data-i18n="gAuto3">Finish with unreviewed code → one gentle "/review?" nudge per session. Just one.</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-num" aria-hidden="true">🎯</span><h2 data-i18n="gFlowTitle">Conversion pages follow an order</h2></div>
+        <div class="flow-line" style="margin-top:.4rem">
+          <span class="fstep" data-i18n="gFlow1">Research</span><span class="farrow">→</span>
+          <span class="fstep" data-i18n="gFlow2">Strategy</span><span class="farrow">→</span>
+          <span class="fstep" data-i18n="gFlow3">Visual direction</span><span class="farrow">→</span>
+          <span class="fstep" data-i18n="gFlow4">Copy</span><span class="farrow">→</span>
+          <span class="fstep" data-i18n="gFlow5">Build</span><span class="farrow">→</span>
+          <span class="fstep" data-i18n="gFlow6">Review</span>
+        </div>
+        <p class="guide-note" data-i18n="gFlowNote">You don't trigger it: the copywriter and the designer refuse to skip steps — that's what separates a page that converts from a merely pretty one.</p>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="card-num" aria-hidden="true">🧷</span><h2 data-i18n="gRulesTitle">The 3 rules that save you</h2></div>
+        <div class="rule"><span class="num">1</span><span data-i18n-html="gRule1"><strong>ABOUT.md is the only file you ever edit.</strong> Switching stacks = editing line 2 (<code>Active pack:</code> — lists allowed: <code>nextjs + node-api</code>).</span></div>
+        <div class="rule"><span class="num">2</span><span data-i18n-html="gRule2">Nothing ships without <code>/review</code> saying APPROVED.</span></div>
+        <div class="rule"><span class="num">3</span><span data-i18n-html="gRule3"><code>.env</code> is never read, pasted or committed. No exceptions.</span></div>
+        <p class="guide-note" data-i18n-html="gHelp">MCP server showing ⚠ failed? Run <code>/mcp</code> and log in (one time). Lost? The full manual lives in <code>.claude/README.md</code>.</p>
+      </section>
+
+    </section>
   </div>
 
   <script>
@@ -854,7 +1000,47 @@
         badgeComplete: 'complete ✓',
         statusDownloaded: 'ABOUT.md downloaded — save it in the project root.',
         statusCopied: 'Content copied.',
-        statusCopyFailed: 'Could not copy — select the preview and copy manually.'
+        statusCopyFailed: 'Could not copy — select the preview and copy manually.',
+        viewAria: 'View',
+        tabBriefing: '✍️ Briefing',
+        tabGuide: '📖 Guide',
+        gStartTitle: 'Starting something?',
+        gStartSub: 'Find your situation — each one is a 3-step path.',
+        gNewTitle: '🆕 Brand-new project',
+        gNew1: 'Fill in the Briefing tab (right here)',
+        gNew2: 'Save ABOUT.md in the project root',
+        gNew3: 'Run <code>claude</code> → type <code>/new-project</code>',
+        gExistTitle: '📦 Existing codebase',
+        gExist1: 'Copy <code>.claude/</code>, <code>CLAUDE.md</code>, <code>.mcp.json</code> and <code>ABOUT.md</code> into the repo',
+        gExist2: 'Run <code>claude</code> → <code>/new-project</code>',
+        gExist3: 'It reads the stack from the code and asks only the rest',
+        gAuditTitle: '🔍 A live page to improve',
+        gAudit1: 'Adopt the repo (previous card)',
+        gAudit2: 'Run <code>/audit &lt;url&gt;</code>',
+        gAudit3: 'You get a prioritized plan before anything is touched',
+        gTalkTitle: 'While you work: mostly, just talk',
+        gTalkSub: 'Describe what you want in plain words — "build the pricing section", "the form doesn\'t submit". The right specialist picks it up on its own. You only drive these four moments:',
+        gCmd1When: 'UI built or changed',
+        gCmd1What: 'Claude looks at every page on 3 screen sizes and fixes what\'s off.',
+        gCmd2When: 'Before delivering anything',
+        gCmd2What: 'Full inspection — verdict APPROVED or BLOCKED, no in-between.',
+        gCmd3When: 'After a big structural change',
+        gCmd3What: 'Docs catch up with reality — always asks before writing.',
+        gCmd4When: 'Long session losing the thread',
+        gCmd4What: 'Deep context reload.',
+        gAutoTitle: 'Things that happen without you asking',
+        gAuto1: 'Open a session → the briefing (ABOUT.md) loads into context by itself.',
+        gAuto2: 'Edit a file → formatting runs by itself (when the project has Prettier).',
+        gAuto3: 'Finish with unreviewed code → one gentle "/review?" nudge per session. Just one.',
+        gFlowTitle: 'Conversion pages follow an order',
+        gFlow1: 'Research', gFlow2: 'Strategy', gFlow3: 'Visual direction',
+        gFlow4: 'Copy', gFlow5: 'Build', gFlow6: 'Review',
+        gFlowNote: 'You don\'t trigger it: the copywriter and the designer refuse to skip steps — that\'s what separates a page that converts from a merely pretty one.',
+        gRulesTitle: 'The 3 rules that save you',
+        gRule1: '<strong>ABOUT.md is the only file you ever edit.</strong> Switching stacks = editing line 2 (<code>Active pack:</code> — lists allowed: <code>nextjs + node-api</code>).',
+        gRule2: 'Nothing ships without <code>/review</code> saying APPROVED.',
+        gRule3: '<code>.env</code> is never read, pasted or committed. No exceptions.',
+        gHelp: 'MCP server showing ⚠ failed? Run <code>/mcp</code> and log in (one time). Lost? The full manual lives in <code>.claude/README.md</code>.'
       },
       pt: {
         title: 'Wizard do ABOUT.md',
@@ -937,7 +1123,47 @@
         badgeComplete: 'completo ✓',
         statusDownloaded: 'ABOUT.md baixado — salve na raiz do projeto.',
         statusCopied: 'Conteúdo copiado.',
-        statusCopyFailed: 'Não foi possível copiar — selecione a prévia e copie manualmente.'
+        statusCopyFailed: 'Não foi possível copiar — selecione a prévia e copie manualmente.',
+        viewAria: 'Visualização',
+        tabBriefing: '✍️ Briefing',
+        tabGuide: '📖 Guia',
+        gStartTitle: 'Começando alguma coisa?',
+        gStartSub: 'Ache a sua situação — cada uma é um caminho de 3 passos.',
+        gNewTitle: '🆕 Projeto novo em folha',
+        gNew1: 'Preencha a aba Briefing (aqui do lado)',
+        gNew2: 'Salve o ABOUT.md na raiz do projeto',
+        gNew3: 'Rode <code>claude</code> → digite <code>/new-project</code>',
+        gExistTitle: '📦 Código que já existe',
+        gExist1: 'Copie <code>.claude/</code>, <code>CLAUDE.md</code>, <code>.mcp.json</code> e <code>ABOUT.md</code> pra dentro do repo',
+        gExist2: 'Rode <code>claude</code> → <code>/new-project</code>',
+        gExist3: 'Ele lê a stack do próprio código e pergunta só o resto',
+        gAuditTitle: '🔍 Página no ar pra melhorar',
+        gAudit1: 'Adote o repo (card anterior)',
+        gAudit2: 'Rode <code>/audit &lt;url&gt;</code>',
+        gAudit3: 'Você recebe um plano priorizado antes de qualquer mudança',
+        gTalkTitle: 'Trabalhando: na maior parte do tempo, só converse',
+        gTalkSub: 'Descreva o que quer em palavras simples — "monta a seção de preços", "o formulário não envia". O especialista certo assume sozinho. Você só dirige nestes quatro momentos:',
+        gCmd1When: 'UI criada ou alterada',
+        gCmd1What: 'O Claude olha cada página em 3 tamanhos de tela e corrige o que estiver torto.',
+        gCmd2When: 'Antes de entregar qualquer coisa',
+        gCmd2What: 'Inspeção completa — veredito APROVADO ou BLOQUEADO, sem meio-termo.',
+        gCmd3When: 'Depois de mudança estrutural grande',
+        gCmd3What: 'A documentação alcança a realidade — sempre pergunta antes de gravar.',
+        gCmd4When: 'Sessão longa perdendo o fio',
+        gCmd4What: 'Recarga profunda de contexto.',
+        gAutoTitle: 'Coisas que acontecem sem você pedir',
+        gAuto1: 'Abrir a sessão → o briefing (ABOUT.md) entra no contexto sozinho.',
+        gAuto2: 'Editar um arquivo → a formatação roda sozinha (quando o projeto tem Prettier).',
+        gAuto3: 'Terminar com código sem revisão → um lembrete gentil de "/review?" por sessão. Um só.',
+        gFlowTitle: 'Página de conversão segue uma ordem',
+        gFlow1: 'Pesquisa', gFlow2: 'Estratégia', gFlow3: 'Direção visual',
+        gFlow4: 'Copy', gFlow5: 'Construção', gFlow6: 'Review',
+        gFlowNote: 'Você não precisa acionar: o copywriter e o designer se recusam a pular etapas — é isso que separa página que converte de página só bonita.',
+        gRulesTitle: 'As 3 regras que te salvam',
+        gRule1: '<strong>ABOUT.md é o único arquivo que você edita.</strong> Trocar de stack = editar a linha 2 (<code>Active pack:</code> — aceita lista: <code>nextjs + node-api</code>).',
+        gRule2: 'Nada é entregue sem o <code>/review</code> dizer APROVADO.',
+        gRule3: '<code>.env</code> nunca é lido, colado ou commitado. Sem exceção.',
+        gHelp: 'MCP marcando ⚠ failed? Rode <code>/mcp</code> e faça login (uma vez só). Perdido? O manual completo mora em <code>.claude/README.md</code>.'
       }
     };
 
@@ -1125,6 +1351,16 @@
         applyI18n();
         renderPackHint();
         refresh();
+      });
+    }
+
+    // View tabs: Briefing (form + preview) vs Guide (visual pocket guide).
+    var viewRadios = document.querySelectorAll('input[name="view"]');
+    for (var vw = 0; vw < viewRadios.length; vw++) {
+      viewRadios[vw].addEventListener('change', function () {
+        var guide = this.value === 'guide';
+        document.getElementById('briefingView').hidden = guide;
+        document.getElementById('guideView').hidden = !guide;
       });
     }
 
