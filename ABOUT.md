@@ -3,19 +3,22 @@ Active pack: none
 Type: [GROUP — SPECIFIC TYPE, e.g., Site & content — Landing page]
 Language: en
 
-> **This is the ONLY file edited per project.** CLAUDE.md is static — never change it
-> per project. Fill this file in by hand or generate it ready-made by opening the root
-> `wizard.html` in a browser (double click). Lines 2–4 above are read by automation: keep
-> the exact formats `Active pack: none|static|nextjs|node-api|python`, `Type: ...` and
-> `Language: ...`, and never move them from position. Multi-stack/monorepo: line 2 accepts
-> a LIST separated by ` + ` (e.g. `Active pack: nextjs + node-api`) — each pack specialist
-> activates for its own part. Line 3 records what the project IS (group — specific type);
-> the groups are: Site & content · E-commerce & sales · Web system & logged-in areas ·
-> API & integrations · Automation & bots · Internal agency use. The wizard suggests the
-> right pack from the type. Line 4 sets the language of every client-facing deliverable
-> (copy, UI strings, error messages, client docs — e.g. `en`, `pt-BR`, `es`); when
-> `.claude/locales/<language>.md` exists, agents read it for market-specific knowledge.
-> Switching packs = editing line 2; pack agents activate on their own in the next session.
+> **The only file you ever edit — one per project.** The easy way: open the root
+> `wizard.html` in a browser (double click) and it generates this file filled in.
+>
+> Lines 2–4 above are machine-read — keep their exact format and position:
+>
+> - **Line 2 · `Active pack:`** — `none | static | nextjs | node-api | python`.
+>   Monorepo? Use a ` + ` list (`nextjs + node-api`). Switching stacks = editing this
+>   one line; the pack specialists activate on their own next session.
+> - **Line 3 · `Type:`** — what the project IS: `<group> — <specific type>`
+>   (groups: Site & content · E-commerce & sales · Web system & logged-in areas ·
+>   API & integrations · Automation & bots · Internal agency use).
+> - **Line 4 · `Language:`** — every client-facing deliverable (copy, UI text, error
+>   messages, client docs) is written in this language. If `.claude/locales/<code>.md`
+>   exists, agents also read it for market-specific knowledge.
+>
+> CLAUDE.md is static — project facts live here, never there.
 
 ## Client and goal
 

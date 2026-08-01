@@ -1,10 +1,29 @@
-# Setup Claude — Claude Code agency template
+# Setup Claude — the full manual
 
 Reusable Claude Code base template for agency projects: landing pages, institutional
 sites, e-commerce and web systems. It standardizes agents, commands, hooks and the
 documentation policy so every new project starts from the same quality floor (a11y AA,
 performance budgets, secrets safety) with zero configuration rework. The deliverable
 language is per-project configuration — declared in ABOUT.md, not baked into the core.
+
+> **This is a reference manual — don't read it top to bottom.** Jump to what you need;
+> for the day-to-day basics, the root `COMMANDS.md` pocket guide is probably enough.
+
+**Jump to:**
+[Architecture](#3-layer-architecture) ·
+[Start a project](#how-to-start-a-project) ·
+[Adopt an existing repo](#adopting-an-existing-repo-the-clients-repo-already-has-code) ·
+[ABOUT.md & wizard](#aboutmd--wizardhtml) ·
+[The 12 agents](#the-12-agents) ·
+[Commands](#commands) ·
+[Creative pipeline](#skills--the-creative-pipeline) ·
+[Hooks](#automatic-hooks) ·
+[MCPs](#mcps) ·
+[Scaffolds](#scaffolds-per-pack) ·
+[Structure map](#structure-map) ·
+[Superpowers](#policy-the-superpowers-plugin) ·
+[Example flows](#example-flows) ·
+[Credits](#credits)
 
 ## 3-layer architecture
 
