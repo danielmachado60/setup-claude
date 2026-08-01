@@ -20,6 +20,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ABOUT.md Wizard</title>
+  <script>
+    // Applied synchronously, before first paint, to avoid a flash of the wrong theme.
+    (function () {
+      try {
+        var saved = localStorage.getItem('setupClaudeTheme');
+        if (saved === 'dark' || saved === 'light') {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
+      } catch (e) { /* localStorage unavailable (e.g. strict file:// sandbox) — fall back to system preference */ }
+    })();
+  </script>
   <style>
     :root {
       --paper: #faf5ec;
@@ -38,6 +49,19 @@
         --ink: #f2ecdf;
         --muted: #a49c8b;
       }
+    }
+    /* Manual toggle wins over the system preference in both directions. */
+    :root[data-theme="dark"] {
+      --paper: #171512;
+      --panel: #201d19;
+      --ink: #f2ecdf;
+      --muted: #a49c8b;
+    }
+    :root[data-theme="light"] {
+      --paper: #faf5ec;
+      --panel: #fffdf7;
+      --ink: #141414;
+      --muted: #6b6558;
     }
     * { box-sizing: border-box; margin: 0; }
     [hidden] { display: none !important; }
@@ -112,6 +136,18 @@
       outline: var(--bw) solid var(--accent); outline-offset: 2px;
     }
 
+    .theme-btn {
+      width: 38px; height: 38px; flex: none;
+      display: grid; place-items: center;
+      font: inherit; font-size: 1.05rem;
+      background: var(--panel); color: var(--ink);
+      border: var(--bw) solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+      cursor: pointer;
+    }
+    .theme-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+    .theme-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+    .theme-btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
     .lang-toggle { display: flex; border: var(--bw) solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
     .lang-btn {
       font: inherit; font-weight: 800; font-size: .78rem;
@@ -351,6 +387,7 @@
         <button type="button" class="btab" id="tabBriefing" aria-pressed="true" data-i18n="tabBriefingB">Briefing</button>
         <button type="button" class="btab" id="tabGuide" aria-pressed="false" data-i18n="tabGuideB">Guide</button>
       </div>
+      <button type="button" class="theme-btn" id="themeToggle" aria-label="Toggle dark mode" data-i18n-aria="themeToggleAria">🌙</button>
       <div class="lang-toggle" role="group" aria-label="Interface language" data-i18n-aria="langToggleAria">
         <button type="button" class="lang-btn" id="langEn" aria-pressed="true">EN</button>
         <button type="button" class="lang-btn" id="langPt" aria-pressed="false">PT</button>
@@ -746,6 +783,7 @@
         title: 'ABOUT.md Wizard',
         tagline: 'Project briefing in 2 minutes — without touching any other file',
         langToggleAria: 'Interface language',
+        themeToggleAria: 'Toggle dark mode',
         viewAria: 'View',
         tabBriefingB: 'Briefing',
         tabGuideB: 'Guide',
@@ -879,6 +917,7 @@
         title: 'Wizard do ABOUT.md',
         tagline: 'Briefing do projeto em 2 minutos — sem tocar em nenhum outro arquivo',
         langToggleAria: 'Idioma da interface',
+        themeToggleAria: 'Alternar modo escuro',
         viewAria: 'Visualização',
         tabBriefingB: 'Briefing',
         tabGuideB: 'Guia',
@@ -1246,6 +1285,26 @@
     }
     $('tabBriefing').addEventListener('click', function () { setView('briefing'); });
     $('tabGuide').addEventListener('click', function () { setView('guide'); });
+
+    // ===== Theme toggle (light/dark, persisted; system preference is the default) =====
+    function effectiveTheme() {
+      var explicit = document.documentElement.getAttribute('data-theme');
+      if (explicit === 'dark' || explicit === 'light') return explicit;
+      return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    function renderThemeButton() {
+      // Icon shows the mode a click will SWITCH TO, not the current one.
+      $('themeToggle').textContent = (effectiveTheme() === 'dark') ? '☀️' : '🌙';
+    }
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      try { localStorage.setItem('setupClaudeTheme', theme); } catch (e) { /* ignore */ }
+      renderThemeButton();
+    }
+    $('themeToggle').addEventListener('click', function () {
+      setTheme(effectiveTheme() === 'dark' ? 'light' : 'dark');
+    });
+    renderThemeButton();
 
     // ===== UI language =====
     function setLang(lang) {
