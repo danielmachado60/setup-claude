@@ -148,10 +148,10 @@
     .theme-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
     .theme-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
     .theme-btn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
-    .lang-toggle { display: flex; border: var(--bw) solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+    .lang-toggle { display: flex; flex-wrap: wrap; border: var(--bw) solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
     .lang-btn {
       font: inherit; font-weight: 800; font-size: .78rem;
-      padding: .38rem .7rem; border: none; cursor: pointer;
+      padding: .38rem .55rem; border: none; cursor: pointer;
       background: var(--panel); color: var(--ink);
     }
     .lang-btn[aria-pressed="true"] { background: var(--accent); color: #141414; }
@@ -388,10 +388,7 @@
         <button type="button" class="btab" id="tabGuide" aria-pressed="false" data-i18n="tabGuideB">Guide</button>
       </div>
       <button type="button" class="theme-btn" id="themeToggle" aria-label="Toggle dark mode" data-i18n-aria="themeToggleAria">🌙</button>
-      <div class="lang-toggle" role="group" aria-label="Interface language" data-i18n-aria="langToggleAria">
-        <button type="button" class="lang-btn" id="langEn" aria-pressed="true">EN</button>
-        <button type="button" class="lang-btn" id="langPt" aria-pressed="false">PT</button>
-      </div>
+      <div class="lang-toggle" id="langToggle" role="group" aria-label="Interface language" data-i18n-aria="langToggleAria"></div>
     </div>
   </header>
 
@@ -541,6 +538,8 @@
           <option value="en" selected>en — English</option>
           <option value="pt-BR">pt-BR — Português (Brasil)</option>
           <option value="es">es — Español</option>
+          <option value="fr">fr — Français</option>
+          <option value="de">de — Deutsch</option>
         </select>
         <label id="spLabel" data-i18n="spLabel">Use superpowers on this project?</label>
         <div class="seg" role="radiogroup" aria-labelledby="spLabel">
@@ -1046,6 +1045,408 @@
         gRule2: 'Nada é entregue sem o <code>/review</code> dizer APROVADO.',
         gRule3: '<code>.env</code> nunca é lido, colado ou commitado. Sem exceção.',
         gHelp: 'MCP marcando ⚠ failed? Rode <code>/mcp</code> e faça login (uma vez só). Perdido? O manual completo mora em <code>.claude/README.md</code>.'
+      },
+      es: {
+        title: 'Wizard de ABOUT.md',
+        tagline: 'Brief del proyecto en 2 minutos — sin tocar ningún otro archivo',
+        langToggleAria: 'Idioma de la interfaz',
+        themeToggleAria: 'Cambiar modo oscuro',
+        viewAria: 'Vista',
+        tabBriefingB: 'Brief',
+        tabGuideB: 'Guía',
+        stepOf: 'Paso {n} / {total}',
+        dotsAria: 'Lista de pasos',
+        goToStep: 'Ir al paso {n}',
+        btnBack: '← Atrás',
+        btnNext: 'Siguiente →',
+        btnReview: 'Revisar ✓',
+        enterHint: 'Enter ↵',
+        s1Q: 'Nombra el proyecto',
+        s1Sub: 'Cliente o nombre en clave — se convierte en el título de ABOUT.md.',
+        c1Title: '¿Qué es el proyecto?',
+        s2Sub: 'Elige el grupo — el tipo y la stack se derivan de ahí.',
+        gdSite: 'Institucional, landing, blog, eventos',
+        gdEcom: 'Tienda, B2B, delivery, suscripciones',
+        gdSys: 'Paneles, áreas de cliente, CRM, nicho',
+        gdApi: 'REST, pagos, WhatsApp, ERP',
+        gdAuto: 'Bots, chat con IA, rutinas, datos',
+        gdInt: 'Nuestras propias herramientas y scripts',
+        s3Q: '¿Qué tipo, exactamente?',
+        typeLabel: 'Tipo específico',
+        typeHint: 'Grupo + tipo van en la línea 3 de ABOUT.md y guían el pack, los agentes y la recomendación de proceso.',
+        suggestedPack: 'Pack sugerido: {pack}',
+        changePack: 'cambiar el pack sugerido',
+        packAria: 'Pack activo',
+        packNoneDesc: 'Decidir después — Claude pregunta antes de asumir una stack',
+        packStaticDesc: 'HTML/CSS/JS puro: landing pages, institucional, one-pagers',
+        packNextDesc: 'Next.js App Router (TS): e-commerce, sistemas, blogs',
+        packNodeDesc: 'API/servicio backend Node.js (TS), separado del frontend',
+        packPyDesc: 'FastAPI, automatizaciones, bots y scripts de Python',
+        projectNameLabel: 'Nombre del proyecto',
+        projectNamePh: 'p. ej., Sitio web Clínica Sonrisa',
+        groupLabel: 'Grupo',
+        c3Title: 'Cliente y objetivo',
+        c3Sub: 'Quién es el cliente y qué resultado debe generar el proyecto.',
+        clientLabel: 'Nombre del cliente',
+        clientPh: 'p. ej., Clínica Sonrisa S.L.',
+        segmentLabel: 'Segmento',
+        segmentPh: 'p. ej., clínica dental en Madrid',
+        goalLabel: 'Objetivo del proyecto',
+        goalPh: 'p. ej., sitio institucional que genere solicitudes de presupuesto',
+        conversionLabel: 'Conversión principal',
+        conversionPh: 'p. ej., envío del formulario de presupuesto',
+        deadlineLabel: 'Fecha de entrega',
+        deadlinePh: 'p. ej., 2026-09-15',
+        c4Title: 'Audiencia y tono de voz',
+        c4Sub: 'Quién visita el sitio y el tono de referencia que seguirá el copywriter.',
+        audienceLabel: 'Audiencia',
+        audiencePh: 'p. ej., dueños de pequeños negocios, 30–55 años, investigan desde el móvil',
+        toneLabel: 'Tono de voz',
+        toneInstTitle: 'Institucional sobrio',
+        toneInstDesc: 'Confiable, sin jerga, sin urgencia artificial — despachos profesionales, clínicas, industria, B2B',
+        toneEcomTitle: 'E-commerce persuasivo',
+        toneEcomDesc: 'Directo, orientado a valor y confianza; urgencia solo cuando es real — tiendas online',
+        toneLandTitle: 'Landing de conversión',
+        toneLandDesc: 'Una promesa, una oferta, un CTA repetido; sin navegación de escape — campañas',
+        voiceLabel: 'Notas de voz (opcional)',
+        voicePh: 'p. ej., el cliente dice "consulta", nunca "cita"; la palabra "barato" está prohibida',
+        c5Title: 'Comandos del proyecto',
+        c5Sub: 'Cómo ejecutar el proyecto — los agentes y <code>/design-review</code> leen de aquí. Déjalo en blanco si aún no existe (el scaffold lo completa después).',
+        cmdDevLabel: 'dev (ejecutar localmente)',
+        cmdDevPh: 'p. ej., npm run dev',
+        cmdBuildLabel: 'build',
+        cmdBuildPh: 'p. ej., npm run build',
+        cmdTestLabel: 'test',
+        cmdTestPh: 'p. ej., npm run test — o "ninguno"',
+        localUrlLabel: 'URL local',
+        localUrlPh: 'p. ej., http://localhost:3000',
+        s7Q: 'Idioma y proceso',
+        projectLangLabel: 'Idioma del proyecto',
+        projectLangHint: 'Va en la línea 4. Todo el material orientado al cliente — copy, textos de UI, mensajes de error, documentos de cliente — se escribe en este idioma.',
+        spLabel: '¿Usar superpowers en este proyecto?',
+        spNo: 'No',
+        spYes: 'Sí',
+        spHint: '<strong>Sí</strong> para e-commerce y sistemas (1+ semana, funciones interdependientes); <strong>no</strong> para landing pages de plazo corto — el overhead no se justifica.',
+        c7Title: 'Restricciones y notas',
+        c7Sub: 'Todo lo que Claude necesita saber para no equivocarse: límites técnicos, decisiones cerradas, integraciones.',
+        constraintsLabel: 'Una restricción por línea (opcional)',
+        constraintsPh: 'p. ej., el hosting solo sirve archivos estáticos — sin backend\np. ej., colores de marca #0A3D62 / #F5F5F5 — no inventar una paleta',
+        s9Q: 'Revisar y descargar',
+        previewAria: 'Vista previa del ABOUT.md generado',
+        btnDownload: 'Descargar ABOUT.md',
+        btnCopy: 'Copiar',
+        footerHint: 'Guarda el archivo en la <strong>raíz del proyecto</strong> (junto a CLAUDE.md), reemplazando el existente. Los campos vacíos aparecen como <code>[FILL IN]</code> — <code>/new-project</code> los detecta y solo pregunta lo que falta.',
+        pendingOne: '1 campo pendiente',
+        pendingMany: '{n} campos pendientes',
+        badgeComplete: 'completo ✓',
+        statusDownloaded: 'ABOUT.md descargado — guárdalo en la raíz del proyecto.',
+        statusCopied: 'Contenido copiado.',
+        statusCopyFailed: 'No se pudo copiar — selecciona la vista previa y copia manualmente.',
+        gStartTitle: '¿Empezando algo?',
+        gStartSub: 'Encuentra tu situación — cada una es un camino de 3 pasos.',
+        gNewTitle: '🆕 Proyecto totalmente nuevo',
+        gNew1: 'Completa la pestaña Brief (aquí mismo)',
+        gNew2: 'Guarda ABOUT.md en la raíz del proyecto',
+        gNew3: 'Ejecuta <code>claude</code> → escribe <code>/new-project</code>',
+        gExistTitle: '📦 Código ya existente',
+        gExist1: 'Copia <code>.claude/</code>, <code>CLAUDE.md</code>, <code>.mcp.json</code> y <code>ABOUT.md</code> al repositorio',
+        gExist2: 'Ejecuta <code>claude</code> → <code>/new-project</code>',
+        gExist3: 'Lee la stack del código y pregunta solo el resto',
+        gAuditTitle: '🔍 Una página en vivo para mejorar',
+        gAudit1: 'Adopta el repositorio (tarjeta anterior)',
+        gAudit2: 'Ejecuta <code>/audit &lt;url&gt;</code>',
+        gAudit3: 'Obtienes un plan priorizado antes de tocar nada',
+        gTalkTitle: 'Mientras trabajas: sobre todo, solo habla',
+        gTalkSub: 'Describe lo que quieres con palabras simples — "arma la sección de precios", "el formulario no envía". El especialista adecuado lo asume solo. Tú solo diriges estos cuatro momentos:',
+        gCmd1When: 'UI creada o modificada',
+        gCmd1What: 'Claude mira cada página en 3 tamaños de pantalla y corrige lo que esté mal.',
+        gCmd2When: 'Antes de entregar cualquier cosa',
+        gCmd2What: 'Inspección completa — veredicto APROBADO o BLOQUEADO, sin términos medios.',
+        gCmd3When: 'Después de un cambio estructural grande',
+        gCmd3What: 'La documentación se pone al día — siempre pregunta antes de escribir.',
+        gCmd4When: 'Sesión larga perdiendo el hilo',
+        gCmd4What: 'Recarga profunda de contexto.',
+        gAutoTitle: 'Cosas que pasan sin que las pidas',
+        gAuto1: 'Abres una sesión → el brief (ABOUT.md) entra al contexto solo.',
+        gAuto2: 'Editas un archivo → el formato se aplica solo (si el proyecto tiene Prettier).',
+        gAuto3: 'Terminas con código sin revisar → un aviso suave de "/review?" por sesión. Solo uno.',
+        gFlowTitle: 'Las páginas de conversión siguen un orden',
+        gFlow1: 'Investigación', gFlow2: 'Estrategia', gFlow3: 'Dirección visual',
+        gFlow4: 'Copy', gFlow5: 'Construcción', gFlow6: 'Revisión',
+        gFlowNote: 'No lo activas tú: el copywriter y el diseñador se niegan a saltar pasos — eso es lo que separa una página que convierte de una que solo es bonita.',
+        gRulesTitle: 'Las 3 reglas que te salvan',
+        gRule1: '<strong>ABOUT.md es el único archivo que edites.</strong> Cambiar de stack = editar la línea 2 (<code>Active pack:</code> — se admiten listas: <code>nextjs + node-api</code>).',
+        gRule2: 'Nada se entrega sin que <code>/review</code> diga APROBADO.',
+        gRule3: '<code>.env</code> nunca se lee, pega ni comitea. Sin excepciones.',
+        gHelp: '¿Un servidor MCP marca ⚠ failed? Ejecuta <code>/mcp</code> e inicia sesión (una sola vez). ¿Perdido? El manual completo está en <code>.claude/README.md</code>.'
+      },
+      fr: {
+        title: 'Assistant ABOUT.md',
+        tagline: 'Brief du projet en 2 minutes — sans toucher à aucun autre fichier',
+        langToggleAria: 'Langue de l\'interface',
+        themeToggleAria: 'Basculer le mode sombre',
+        viewAria: 'Vue',
+        tabBriefingB: 'Brief',
+        tabGuideB: 'Guide',
+        stepOf: 'Étape {n} / {total}',
+        dotsAria: 'Liste des étapes',
+        goToStep: 'Aller à l\'étape {n}',
+        btnBack: '← Retour',
+        btnNext: 'Suivant →',
+        btnReview: 'Vérifier ✓',
+        enterHint: 'Entrée ↵',
+        s1Q: 'Nommez le projet',
+        s1Sub: 'Client ou nom de code — devient le titre du fichier ABOUT.md.',
+        c1Title: 'Quel est le projet ?',
+        s2Sub: 'Choisissez le groupe — le type et la stack en découlent.',
+        gdSite: 'Institutionnel, landing, blog, événements',
+        gdEcom: 'Boutique, B2B, livraison, abonnements',
+        gdSys: 'Panneaux, espaces client, CRM, niche',
+        gdApi: 'REST, paiements, WhatsApp, ERP',
+        gdAuto: 'Bots, chat IA, routines, données',
+        gdInt: 'Nos propres outils et scripts',
+        s3Q: 'Quel type, exactement ?',
+        typeLabel: 'Type spécifique',
+        typeHint: 'Groupe + type figurent à la ligne 3 d\'ABOUT.md et orientent le pack, les agents et la recommandation de processus.',
+        suggestedPack: 'Pack suggéré : {pack}',
+        changePack: 'changer le pack suggéré',
+        packAria: 'Pack actif',
+        packNoneDesc: 'Décider plus tard — Claude demande avant de présumer une stack',
+        packStaticDesc: 'HTML/CSS/JS pur : landing pages, institutionnel, one-pagers',
+        packNextDesc: 'Next.js App Router (TS) : e-commerce, systèmes, blogs',
+        packNodeDesc: 'API/service backend Node.js (TS), séparé du frontend',
+        packPyDesc: 'FastAPI, automatisations, bots et scripts Python',
+        projectNameLabel: 'Nom du projet',
+        projectNamePh: 'ex. : Site web Clinique Sourire',
+        groupLabel: 'Groupe',
+        c3Title: 'Client et objectif',
+        c3Sub: 'Qui est le client et quel résultat le projet doit produire.',
+        clientLabel: 'Nom du client',
+        clientPh: 'ex. : Clinique Sourire SARL',
+        segmentLabel: 'Segment',
+        segmentPh: 'ex. : cabinet dentaire à Lyon',
+        goalLabel: 'Objectif du projet',
+        goalPh: 'ex. : site institutionnel qui génère des demandes de devis',
+        conversionLabel: 'Conversion principale',
+        conversionPh: 'ex. : envoi du formulaire de devis',
+        deadlineLabel: 'Date de livraison',
+        deadlinePh: 'ex. : 2026-09-15',
+        c4Title: 'Audience et ton de voix',
+        c4Sub: 'Qui visite le site et le ton de référence que suivra le rédacteur.',
+        audienceLabel: 'Audience',
+        audiencePh: 'ex. : dirigeants de petites entreprises, 30–55 ans, se renseignent sur mobile',
+        toneLabel: 'Ton de voix',
+        toneInstTitle: 'Institutionnel sobre',
+        toneInstDesc: 'Digne de confiance, sans argot, sans urgence artificielle — cabinets, cliniques, industrie, B2B',
+        toneEcomTitle: 'E-commerce persuasif',
+        toneEcomDesc: 'Direct, axé valeur et confiance ; urgence seulement quand elle est réelle — boutiques en ligne',
+        toneLandTitle: 'Landing de conversion',
+        toneLandDesc: 'Une promesse, une offre, un CTA répété ; aucune navigation d\'échappement — campagnes',
+        voiceLabel: 'Notes de ton (optionnel)',
+        voicePh: 'ex. : le client dit "consultation", jamais "rendez-vous" ; le mot "pas cher" est banni',
+        c5Title: 'Commandes du projet',
+        c5Sub: 'Comment lancer le projet — les agents et <code>/design-review</code> lisent ces informations ici. Laissez vide si cela n\'existe pas encore (le scaffold les remplira plus tard).',
+        cmdDevLabel: 'dev (exécution locale)',
+        cmdDevPh: 'ex. : npm run dev',
+        cmdBuildLabel: 'build',
+        cmdBuildPh: 'ex. : npm run build',
+        cmdTestLabel: 'test',
+        cmdTestPh: 'ex. : npm run test — ou "aucun"',
+        localUrlLabel: 'URL locale',
+        localUrlPh: 'ex. : http://localhost:3000',
+        s7Q: 'Langue et processus',
+        projectLangLabel: 'Langue du projet',
+        projectLangHint: 'Figure à la ligne 4. Tous les livrables destinés au client — textes, chaînes d\'interface, messages d\'erreur, documents client — sont rédigés dans cette langue.',
+        spLabel: 'Utiliser superpowers sur ce projet ?',
+        spNo: 'Non',
+        spYes: 'Oui',
+        spHint: '<strong>Oui</strong> pour l\'e-commerce et les systèmes (1+ semaine, fonctionnalités interdépendantes) ; <strong>non</strong> pour les landing pages à délai court — le coût ne se justifie pas.',
+        c7Title: 'Contraintes et notes',
+        c7Sub: 'Tout ce que Claude doit savoir pour ne pas se tromper : limites techniques, décisions actées, intégrations.',
+        constraintsLabel: 'Une contrainte par ligne (optionnel)',
+        constraintsPh: 'ex. : l\'hébergement ne sert que des fichiers statiques — pas de backend\nex. : couleurs de marque #0A3D62 / #F5F5F5 — ne pas inventer de palette',
+        s9Q: 'Vérifier et télécharger',
+        previewAria: 'Aperçu du fichier ABOUT.md généré',
+        btnDownload: 'Télécharger ABOUT.md',
+        btnCopy: 'Copier',
+        footerHint: 'Enregistrez le fichier à la <strong>racine du projet</strong> (à côté de CLAUDE.md), en remplaçant l\'existant. Les champs vides deviennent <code>[FILL IN]</code> — <code>/new-project</code> les détecte et ne demande que ce qui manque.',
+        pendingOne: '1 champ en attente',
+        pendingMany: '{n} champs en attente',
+        badgeComplete: 'complet ✓',
+        statusDownloaded: 'ABOUT.md téléchargé — enregistrez-le à la racine du projet.',
+        statusCopied: 'Contenu copié.',
+        statusCopyFailed: 'Impossible de copier — sélectionnez l\'aperçu et copiez manuellement.',
+        gStartTitle: 'Vous démarrez quelque chose ?',
+        gStartSub: 'Trouvez votre situation — chacune est un parcours en 3 étapes.',
+        gNewTitle: '🆕 Projet entièrement nouveau',
+        gNew1: 'Remplissez l\'onglet Brief (juste ici)',
+        gNew2: 'Enregistrez ABOUT.md à la racine du projet',
+        gNew3: 'Lancez <code>claude</code> → tapez <code>/new-project</code>',
+        gExistTitle: '📦 Code déjà existant',
+        gExist1: 'Copiez <code>.claude/</code>, <code>CLAUDE.md</code>, <code>.mcp.json</code> et <code>ABOUT.md</code> dans le dépôt',
+        gExist2: 'Lancez <code>claude</code> → <code>/new-project</code>',
+        gExist3: 'Il lit la stack depuis le code et ne demande que le reste',
+        gAuditTitle: '🔍 Une page en ligne à améliorer',
+        gAudit1: 'Adoptez le dépôt (carte précédente)',
+        gAudit2: 'Lancez <code>/audit &lt;url&gt;</code>',
+        gAudit3: 'Vous obtenez un plan priorisé avant de toucher à quoi que ce soit',
+        gTalkTitle: 'Pendant le travail : surtout, parlez',
+        gTalkSub: 'Décrivez ce que vous voulez en mots simples — "construis la section tarifs", "le formulaire ne s\'envoie pas". Le bon spécialiste s\'en charge tout seul. Vous ne pilotez que ces quatre moments :',
+        gCmd1When: 'UI créée ou modifiée',
+        gCmd1What: 'Claude regarde chaque page sur 3 tailles d\'écran et corrige ce qui cloche.',
+        gCmd2When: 'Avant toute livraison',
+        gCmd2What: 'Inspection complète — verdict APPROUVÉ ou BLOQUÉ, sans entre-deux.',
+        gCmd3When: 'Après un changement structurel important',
+        gCmd3What: 'La documentation se met à jour — demande toujours avant d\'écrire.',
+        gCmd4When: 'Session longue, on perd le fil',
+        gCmd4What: 'Rechargement profond du contexte.',
+        gAutoTitle: 'Ce qui se passe sans que vous le demandiez',
+        gAuto1: 'Ouvrez une session → le brief (ABOUT.md) charge dans le contexte tout seul.',
+        gAuto2: 'Modifiez un fichier → le formatage s\'applique tout seul (si le projet a Prettier).',
+        gAuto3: 'Terminez avec du code non relu → un rappel discret "/review ?" par session. Un seul.',
+        gFlowTitle: 'Les pages de conversion suivent un ordre',
+        gFlow1: 'Recherche', gFlow2: 'Stratégie', gFlow3: 'Direction visuelle',
+        gFlow4: 'Rédaction', gFlow5: 'Construction', gFlow6: 'Vérification',
+        gFlowNote: 'Vous ne le déclenchez pas : le rédacteur et le designer refusent de sauter des étapes — c\'est ce qui distingue une page qui convertit d\'une page simplement jolie.',
+        gRulesTitle: 'Les 3 règles qui vous sauvent',
+        gRule1: '<strong>ABOUT.md est le seul fichier que vous modifiez.</strong> Changer de stack = modifier la ligne 2 (<code>Active pack:</code> — les listes sont acceptées : <code>nextjs + node-api</code>).',
+        gRule2: 'Rien n\'est livré sans que <code>/review</code> dise APPROUVÉ.',
+        gRule3: '<code>.env</code> n\'est jamais lu, collé ni commité. Sans exception.',
+        gHelp: 'Un serveur MCP affiche ⚠ failed ? Lancez <code>/mcp</code> et connectez-vous (une seule fois). Perdu ? Le manuel complet se trouve dans <code>.claude/README.md</code>.'
+      },
+      de: {
+        title: 'ABOUT.md-Assistent',
+        tagline: 'Projekt-Briefing in 2 Minuten — ohne eine andere Datei anzufassen',
+        langToggleAria: 'Oberflächensprache',
+        themeToggleAria: 'Dunkelmodus umschalten',
+        viewAria: 'Ansicht',
+        tabBriefingB: 'Briefing',
+        tabGuideB: 'Anleitung',
+        stepOf: 'Schritt {n} / {total}',
+        dotsAria: 'Schrittliste',
+        goToStep: 'Zu Schritt {n} springen',
+        btnBack: '← Zurück',
+        btnNext: 'Weiter →',
+        btnReview: 'Prüfen ✓',
+        enterHint: 'Enter ↵',
+        s1Q: 'Projekt benennen',
+        s1Sub: 'Kunde oder Codename — wird zum Titel von ABOUT.md.',
+        c1Title: 'Was ist das Projekt?',
+        s2Sub: 'Gruppe wählen — Typ und Stack ergeben sich daraus.',
+        gdSite: 'Institutionell, Landing, Blog, Events',
+        gdEcom: 'Shop, B2B, Lieferung, Abos',
+        gdSys: 'Panels, Kundenbereiche, CRM, Nische',
+        gdApi: 'REST, Zahlungen, WhatsApp, ERP',
+        gdAuto: 'Bots, KI-Chat, Routinen, Daten',
+        gdInt: 'Unsere eigenen Tools und Skripte',
+        s3Q: 'Welcher Typ genau?',
+        typeLabel: 'Spezifischer Typ',
+        typeHint: 'Gruppe + Typ stehen in Zeile 3 von ABOUT.md und steuern Pack, Agenten und die Prozessempfehlung.',
+        suggestedPack: 'Vorgeschlagenes Pack: {pack}',
+        changePack: 'vorgeschlagenes Pack ändern',
+        packAria: 'Aktives Pack',
+        packNoneDesc: 'Später entscheiden — Claude fragt nach, bevor es einen Stack annimmt',
+        packStaticDesc: 'Reines HTML/CSS/JS: Landingpages, institutionell, One-Pager',
+        packNextDesc: 'Next.js App Router (TS): E-Commerce, Systeme, Blogs',
+        packNodeDesc: 'Node.js (TS) Backend-API/-Service, getrennt vom Frontend',
+        packPyDesc: 'FastAPI, Automatisierungen, Bots und Python-Skripte',
+        projectNameLabel: 'Projektname',
+        projectNamePh: 'z. B. Website Zahnklinik Lächeln',
+        groupLabel: 'Gruppe',
+        c3Title: 'Kunde und Ziel',
+        c3Sub: 'Wer der Kunde ist und welches Ergebnis das Projekt liefern muss.',
+        clientLabel: 'Kundenname',
+        clientPh: 'z. B. Zahnklinik Lächeln GmbH',
+        segmentLabel: 'Segment',
+        segmentPh: 'z. B. Zahnarztpraxis in Berlin',
+        goalLabel: 'Projektziel',
+        goalPh: 'z. B. institutionelle Website, die Angebotsanfragen generiert',
+        conversionLabel: 'Primäre Conversion',
+        conversionPh: 'z. B. Absenden des Angebotsformulars',
+        deadlineLabel: 'Liefertermin',
+        deadlinePh: 'z. B. 2026-09-15',
+        c4Title: 'Zielgruppe und Tonalität',
+        c4Sub: 'Wer die Website besucht und der Referenzton, dem der Copywriter folgt.',
+        audienceLabel: 'Zielgruppe',
+        audiencePh: 'z. B. Kleinunternehmer, 30–55, recherchieren am Handy',
+        toneLabel: 'Tonalität',
+        toneInstTitle: 'Nüchtern-institutionell',
+        toneInstDesc: 'Vertrauenswürdig, kein Slang, keine künstliche Dringlichkeit — Kanzleien, Praxen, Industrie, B2B',
+        toneEcomTitle: 'Überzeugender E-Commerce',
+        toneEcomDesc: 'Direkt, wert- und vertrauensorientiert; Dringlichkeit nur, wenn sie real ist — Onlineshops',
+        toneLandTitle: 'Conversion-Landingpage',
+        toneLandDesc: 'Ein Versprechen, ein Angebot, ein wiederholter CTA; keine Fluchtnavigation — Kampagnen',
+        voiceLabel: 'Ton-Hinweise (optional)',
+        voicePh: 'z. B. Kunde sagt "Beratung", nie "Termin"; das Wort "billig" ist verboten',
+        c5Title: 'Projektbefehle',
+        c5Sub: 'So wird das Projekt gestartet — Agenten und <code>/design-review</code> lesen dies von hier. Leer lassen, falls noch nicht vorhanden (das Scaffold füllt es später aus).',
+        cmdDevLabel: 'dev (lokal starten)',
+        cmdDevPh: 'z. B. npm run dev',
+        cmdBuildLabel: 'build',
+        cmdBuildPh: 'z. B. npm run build',
+        cmdTestLabel: 'test',
+        cmdTestPh: 'z. B. npm run test — oder "keine"',
+        localUrlLabel: 'Lokale URL',
+        localUrlPh: 'z. B. http://localhost:3000',
+        s7Q: 'Sprache und Prozess',
+        projectLangLabel: 'Projektsprache',
+        projectLangHint: 'Steht in Zeile 4. Alle kundenseitigen Inhalte — Texte, UI-Strings, Fehlermeldungen, Kundendokumente — werden in dieser Sprache verfasst.',
+        spLabel: 'Superpowers für dieses Projekt nutzen?',
+        spNo: 'Nein',
+        spYes: 'Ja',
+        spHint: '<strong>Ja</strong> für E-Commerce und Systeme (1+ Woche, voneinander abhängige Funktionen); <strong>nein</strong> für Landingpages mit kurzer Frist — der Mehraufwand lohnt sich nicht.',
+        c7Title: 'Einschränkungen und Hinweise',
+        c7Sub: 'Alles, was Claude wissen muss, um keine Fehler zu machen: technische Grenzen, feste Entscheidungen, Integrationen.',
+        constraintsLabel: 'Eine Einschränkung pro Zeile (optional)',
+        constraintsPh: 'z. B. Hosting liefert nur statische Dateien — kein Backend\nz. B. Markenfarben #0A3D62 / #F5F5F5 — keine eigene Palette erfinden',
+        s9Q: 'Prüfen und herunterladen',
+        previewAria: 'Vorschau der generierten ABOUT.md',
+        btnDownload: 'ABOUT.md herunterladen',
+        btnCopy: 'Kopieren',
+        footerHint: 'Speichere die Datei im <strong>Projekt-Root</strong> (neben CLAUDE.md) und ersetze die vorhandene. Leere Felder erscheinen als <code>[FILL IN]</code> — <code>/new-project</code> erkennt sie und fragt nur nach dem Fehlenden.',
+        pendingOne: '1 Feld offen',
+        pendingMany: '{n} Felder offen',
+        badgeComplete: 'vollständig ✓',
+        statusDownloaded: 'ABOUT.md heruntergeladen — im Projekt-Root speichern.',
+        statusCopied: 'Inhalt kopiert.',
+        statusCopyFailed: 'Kopieren fehlgeschlagen — Vorschau markieren und manuell kopieren.',
+        gStartTitle: 'Etwas Neues starten?',
+        gStartSub: 'Finde deine Situation — jede ist ein 3-Schritte-Weg.',
+        gNewTitle: '🆕 Brandneues Projekt',
+        gNew1: 'Briefing-Tab ausfüllen (hier direkt)',
+        gNew2: 'ABOUT.md im Projekt-Root speichern',
+        gNew3: '<code>claude</code> ausführen → <code>/new-project</code> eingeben',
+        gExistTitle: '📦 Bestehender Code',
+        gExist1: '<code>.claude/</code>, <code>CLAUDE.md</code>, <code>.mcp.json</code> und <code>ABOUT.md</code> ins Repo kopieren',
+        gExist2: '<code>claude</code> ausführen → <code>/new-project</code>',
+        gExist3: 'Liest den Stack aus dem Code und fragt nur den Rest',
+        gAuditTitle: '🔍 Eine Live-Seite verbessern',
+        gAudit1: 'Repo übernehmen (vorherige Karte)',
+        gAudit2: '<code>/audit &lt;url&gt;</code> ausführen',
+        gAudit3: 'Du bekommst einen priorisierten Plan, bevor irgendetwas angefasst wird',
+        gTalkTitle: 'Bei der Arbeit: meistens einfach reden',
+        gTalkSub: 'Beschreibe in einfachen Worten, was du willst — "baue den Preise-Bereich", "das Formular sendet nicht ab". Der richtige Spezialist übernimmt von selbst. Nur diese vier Momente steuerst du:',
+        gCmd1When: 'UI gebaut oder geändert',
+        gCmd1What: 'Claude schaut sich jede Seite in 3 Bildschirmgrößen an und behebt, was nicht passt.',
+        gCmd2When: 'Vor jeder Auslieferung',
+        gCmd2What: 'Vollständige Prüfung — Urteil GENEHMIGT oder BLOCKIERT, nichts dazwischen.',
+        gCmd3When: 'Nach einer großen strukturellen Änderung',
+        gCmd3What: 'Die Doku zieht nach — fragt immer, bevor sie schreibt.',
+        gCmd4When: 'Lange Session, roter Faden verloren',
+        gCmd4What: 'Tiefe Kontext-Neuladung.',
+        gAutoTitle: 'Dinge, die von selbst passieren',
+        gAuto1: 'Session öffnen → das Briefing (ABOUT.md) lädt von selbst in den Kontext.',
+        gAuto2: 'Datei bearbeiten → die Formatierung läuft von selbst (wenn das Projekt Prettier hat).',
+        gAuto3: 'Session mit ungeprüftem Code beenden → ein sanfter "/review?"-Hinweis pro Session. Nur einer.',
+        gFlowTitle: 'Conversion-Seiten folgen einer Reihenfolge',
+        gFlow1: 'Recherche', gFlow2: 'Strategie', gFlow3: 'Visuelle Richtung',
+        gFlow4: 'Text', gFlow5: 'Aufbau', gFlow6: 'Review',
+        gFlowNote: 'Du löst es nicht selbst aus: Copywriter und Designer weigern sich, Schritte zu überspringen — das unterscheidet eine Seite, die konvertiert, von einer, die nur hübsch ist.',
+        gRulesTitle: 'Die 3 Regeln, die dich retten',
+        gRule1: '<strong>ABOUT.md ist die einzige Datei, die du je bearbeitest.</strong> Stack wechseln = Zeile 2 bearbeiten (<code>Active pack:</code> — Listen erlaubt: <code>nextjs + node-api</code>).',
+        gRule2: 'Nichts geht raus, ohne dass <code>/review</code> GENEHMIGT sagt.',
+        gRule3: '<code>.env</code> wird nie gelesen, eingefügt oder committet. Keine Ausnahmen.',
+        gHelp: 'MCP-Server zeigt ⚠ failed? <code>/mcp</code> ausführen und einloggen (einmalig). Verloren? Das vollständige Handbuch liegt in <code>.claude/README.md</code>.'
       }
     };
 
@@ -1074,7 +1475,7 @@
     }
 
     function applyI18n() {
-      document.documentElement.lang = (uiLang === 'pt') ? 'pt-BR' : 'en';
+      document.documentElement.lang = (uiLang === 'pt') ? 'pt-BR' : uiLang;
       var i, nodes;
       nodes = document.querySelectorAll('[data-i18n]');
       for (i = 0; i < nodes.length; i++) nodes[i].textContent = t(nodes[i].getAttribute('data-i18n'));
@@ -1307,16 +1708,45 @@
     renderThemeButton();
 
     // ===== UI language =====
+    // UI code → default project-language value (ABOUT.md line 4) suggested on switch,
+    // only while the user hasn't manually touched the project-language select.
+    var UI_LANGS = [
+      { code: 'en', label: 'EN', projectLang: 'en' },
+      { code: 'pt', label: 'PT', projectLang: 'pt-BR' },
+      { code: 'es', label: 'ES', projectLang: 'es' },
+      { code: 'fr', label: 'FR', projectLang: 'fr' },
+      { code: 'de', label: 'DE', projectLang: 'de' }
+    ];
+
+    function buildLangToggle() {
+      var box = $('langToggle');
+      box.innerHTML = '';
+      UI_LANGS.forEach(function (l) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'lang-btn';
+        b.id = 'lang-' + l.code;
+        b.textContent = l.label;
+        b.setAttribute('aria-pressed', String(l.code === uiLang));
+        b.addEventListener('click', function () { setLang(l.code); });
+        box.appendChild(b);
+      });
+    }
+
     function setLang(lang) {
       uiLang = lang;
-      $('langEn').setAttribute('aria-pressed', String(lang === 'en'));
-      $('langPt').setAttribute('aria-pressed', String(lang === 'pt'));
-      if (!projectLangTouched) $('projectLang').value = (lang === 'pt') ? 'pt-BR' : 'en';
+      UI_LANGS.forEach(function (l) {
+        var btn = $('lang-' + l.code);
+        if (btn) btn.setAttribute('aria-pressed', String(l.code === lang));
+      });
+      if (!projectLangTouched) {
+        var entry = UI_LANGS.filter(function (l) { return l.code === lang; })[0];
+        $('projectLang').value = entry ? entry.projectLang : 'en';
+      }
       applyI18n();
       if (currentStep === TOTAL_STEPS) refreshPreview();
     }
-    $('langEn').addEventListener('click', function () { setLang('en'); });
-    $('langPt').addEventListener('click', function () { setLang('pt'); });
+    buildLangToggle();
 
     // ===== Download / copy =====
     $('btnDownload').addEventListener('click', function () {

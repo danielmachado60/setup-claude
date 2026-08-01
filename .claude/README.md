@@ -106,7 +106,12 @@ artifacts (code identifiers, comments, commit messages) default to English unles
 `## Constraints and notes` says otherwise. If `.claude/locales/<language>.md` exists,
 agents read it before client-facing work — it holds market-specific knowledge (review
 sources, legal requirements, payment rails, cultural CTA norms). The template ships with
-`.claude/locales/pt-BR.md`; new locale files are welcome.
+`pt-BR`, `es`, `fr` and `de`; new locale files are welcome — **any** language code works
+on line 4 even without a matching locale file, the file only adds extra market knowledge.
+
+The wizard's own UI (`wizard.html`) is bilingual-plus: the chrome renders in EN, PT, ES,
+FR or DE via the toggle in the header — independent of the project language you pick for
+ABOUT.md (the generated file is always canonical English regardless of UI language).
 
 ### 2-step classification: group → type → suggested pack
 

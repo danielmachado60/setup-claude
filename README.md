@@ -51,7 +51,7 @@ existing page? `/audit <url>` delivers a prioritized conversion audit first.
 | **Hooks (3)** | Session context auto-injection, post-edit formatting, review reminders — the process runs itself |
 | **MCPs** | 5 pre-wired (Playwright, Context7, GitHub, Supabase, Sentry) + a ready-to-paste catalog of 11 more |
 | **Stack packs (4)** | Next.js App Router, static HTML/CSS/JS, Node API (TS), Python — each with conventions (PACK.md) and a ready scaffold. Monorepos: activate several at once |
-| **Locales** | Deliverable language is per-project config; market knowledge lives in locale files (ships with pt-BR) |
+| **Locales** | Deliverable language is per-project config; market knowledge lives in locale files (ships with pt-BR, es, fr, de) |
 
 Universal agents work with **any** stack (`Active pack: none`) — packs are the
 included blades, and [adding a pack](.github/CONTRIBUTING.md) is a documented path.
