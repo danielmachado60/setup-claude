@@ -19,7 +19,30 @@ fork — keep contributions in that shape.
   with local terms inline. Use `pt-BR.md` as the reference shape (~60 lines, actionable
   bullets only).
 - **Packs** (`.claude/packs/`): stack conventions and anti-patterns, not framework
-  documentation.
+  documentation. Full path below.
+
+### Adding a stack pack
+
+A pack has three parts, all required:
+
+1. `.claude/packs/<stack>/PACK.md` — the stack's conventions and anti-patterns
+   (follow the structure of the existing four).
+2. `.claude/packs/<stack>/scaffold/` — a `SCAFFOLD.md` with the exact setup commands
+   plus ready config files and a minimal runnable example.
+3. `.claude/agents/<stack>-specialist.md` — the specialist agent, gated by the
+   ABOUT.md line 2 (description must start with "Activate ONLY when the Active pack
+   line of ABOUT.md CONTAINS <stack>").
+
+Also update the taxonomy where the new pack becomes a suggestion: `wizard.html`
+(GROUPS object) AND `.claude/commands/new-project.md` (taxonomy table) — the two
+copies always move together.
+
+### Adding a locale
+
+Create `.claude/locales/<language-code>.md` following the format of
+`.claude/locales/pt-BR.md`: written in English, market terms inline, actionable
+bullets only (review sources, legal requirements, payment rails, cultural CTA
+norms, formats). ~60 lines max.
 
 ## Style rules
 

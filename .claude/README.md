@@ -30,6 +30,9 @@ language is per-project configuration — declared in ABOUT.md, not baked into t
 
 Quick cheat sheet of commands and scenarios for day-to-day work: `COMMANDS.md` at the root.
 
+Your project will get its own README — replacing the template's showcase README at the
+root is expected and encouraged.
+
 ## Adopting an EXISTING repo (the client's repo already has code)
 
 The template also drops into a repository that already exists — it is a 4-item overlay:
