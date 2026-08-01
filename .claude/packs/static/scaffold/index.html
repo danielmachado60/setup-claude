@@ -1,0 +1,162 @@
+<!doctype html>
+<!-- lang: set to the project language (line 4 of ABOUT.md), e.g. pt-BR -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Placeholders: YOUR_* in metadata, [TEXT] in visible content.
+         Before delivering: grep for "YOUR_" and "[" — nothing may remain. -->
+    <title>YOUR_COMPANY — YOUR_VALUE_PROPOSITION</title>
+    <meta
+      name="description"
+      content="YOUR_DESCRIPTION (120–155 characters, with the main keyword — this shows up on Google)"
+    />
+    <link rel="canonical" href="https://YOUR_DOMAIN.com/" />
+
+    <!-- Open Graph — test the share preview on the apps the client's audience
+         uses before delivering. og:locale must match the project language. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="YOUR_COMPANY — YOUR_VALUE_PROPOSITION" />
+    <meta property="og:description" content="YOUR_DESCRIPTION" />
+    <meta property="og:url" content="https://YOUR_DOMAIN.com/" />
+    <meta property="og:image" content="https://YOUR_DOMAIN.com/img/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Favicons: generate the 3 real files (PACK.md checklist) -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <script type="module" src="/js/main.js"></script>
+  </head>
+  <body>
+    <!-- Skip link: the first focusable element on the page -->
+    <a class="skip-link" href="#content">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner" data-menu>
+        <a class="logo" href="/">[COMPANY NAME]</a>
+
+        <!-- hidden by default: without JS the menu stays always visible
+             (progressive enhancement — js/main.js activates the button) -->
+        <button
+          type="button"
+          data-menu-button
+          aria-expanded="false"
+          aria-controls="main-menu"
+          hidden
+        >
+          Menu
+        </button>
+
+        <nav aria-label="Primary">
+          <ul id="main-menu" class="menu-list" data-menu-list>
+            <li><a href="#services">[SERVICES]</a></li>
+            <li><a href="#about">[ABOUT]</a></li>
+            <li><a href="#contact">[CONTACT]</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content">
+      <!-- Hero: one h1 per page, always -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="container">
+          <h1 id="hero-title">
+            [CLIENT HEADLINE — main benefit in one sentence]
+          </h1>
+          <p class="hero-subhead">
+            [SUBHEADLINE — complement that qualifies the h1's promise]
+          </p>
+          <a class="button" href="#contact">[CALL TO ACTION]</a>
+        </div>
+      </section>
+
+      <section id="services" aria-labelledby="services-title">
+        <div class="container">
+          <h2 id="services-title">[SERVICES SECTION TITLE]</h2>
+          <div class="cards">
+            <article class="card">
+              <h3>[SERVICE 1]</h3>
+              <p>[SHORT DESCRIPTION OF SERVICE 1]</p>
+            </article>
+            <article class="card">
+              <h3>[SERVICE 2]</h3>
+              <p>[SHORT DESCRIPTION OF SERVICE 2]</p>
+            </article>
+            <article class="card">
+              <h3>[SERVICE 3]</h3>
+              <p>[SHORT DESCRIPTION OF SERVICE 3]</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" aria-labelledby="about-title">
+        <div class="container">
+          <h2 id="about-title">[ABOUT SECTION TITLE]</h2>
+          <p>
+            [TEXT ABOUT THE COMPANY — proof, history, differentiators. No lorem
+            ipsum: if the final text doesn't exist yet, write the question the
+            client needs to answer.]
+          </p>
+        </div>
+      </section>
+
+      <section id="contact" aria-labelledby="contact-title">
+        <div class="container">
+          <h2 id="contact-title">[CONTACT SECTION TITLE]</h2>
+
+          <!-- The form works WITHOUT JS: native POST to the endpoint
+               (Formspree, Netlify Forms, the client's endpoint...) -->
+          <form class="contact-form" action="YOUR_FORM_URL" method="post">
+            <div class="field">
+              <label for="field-name">Name</label>
+              <input
+                id="field-name"
+                name="name"
+                type="text"
+                autocomplete="name"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="field-email">Email</label>
+              <input
+                id="field-email"
+                name="email"
+                type="email"
+                autocomplete="email"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="field-message">Message</label>
+              <textarea
+                id="field-message"
+                name="message"
+                rows="5"
+                required
+              ></textarea>
+            </div>
+            <button class="button" type="submit">Send message</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          © <span data-year>2026</span> [COMPANY NAME]. [COMPANY REGISTRATION /
+          ADDRESS IF APPLICABLE]
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

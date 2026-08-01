@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- lang: set to the project language (line 4 of ABOUT.md), e.g. pt-BR -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Error page is not indexed; it must be configured on the host to
+         actually answer the 404s (PACK.md checklist). -->
+    <meta name="robots" content="noindex" />
+    <title>Page not found — YOUR_COMPANY</title>
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+
+    <link rel="stylesheet" href="/css/main.css" />
+    <script type="module" src="/js/main.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="logo" href="/">[COMPANY NAME]</a>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="hero" aria-labelledby="title-404">
+        <div class="container">
+          <h1 id="title-404">Page not found</h1>
+          <p class="hero-subhead">
+            [MESSAGE IN THE CLIENT'S TONE OF VOICE — e.g. the address may have
+            changed or never existed; point the way back.]
+          </p>
+          <a class="button" href="/">Back to the home page</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>© <span data-year>2026</span> [COMPANY NAME]</p>
+      </div>
+    </footer>
+  </body>
+</html>

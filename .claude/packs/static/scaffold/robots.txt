@@ -1,0 +1,10 @@
+# PRODUCTION robots.txt — allows everything and points to the sitemap.
+# [REPLACE] YOUR_DOMAIN with the final domain before deploy and create the
+# sitemap.xml with the real URLs (PACK.md checklist).
+# Preview/staging must NOT be indexed: hosts like Netlify/Vercel already send
+# noindex on previews; on your own server, block staging some other way.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://YOUR_DOMAIN.com/sitemap.xml

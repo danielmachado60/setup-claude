@@ -1,0 +1,20 @@
+# Dependencies and builds (belong in projects, not in the template)
+node_modules/
+dist/
+build/
+.next/
+__pycache__/
+.venv/
+
+# Secrets — NEVER committed (`.env.example` from the scaffolds is the allowed exception)
+.env
+.env.*
+!.env.example
+
+# Claude Code runtime artifacts
+.claude/scheduled_tasks.lock
+.claude/tmp/
+
+# OS
+.DS_Store
+Thumbs.db
