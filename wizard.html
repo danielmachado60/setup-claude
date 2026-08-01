@@ -1,28 +1,19 @@
 <!DOCTYPE html>
 <!--
-  wizard.html — ABOUT.md generator (agency Claude Code template)
+  wizard.html — the ABOUT.md generator (Setup Claude).
 
-  MAINTENANCE: the fields in this form and the generateAbout() function at the bottom
-  must stay IN SYNC with the root ABOUT.md template. Changed a heading, bullet or
-  placeholder in ABOUT.md? Change it here too — /new-project and the hooks parse the
-  generated file (especially line 2 "Active pack: ...", line 3 "Type: ..." and
-  line 4 "Language: ...").
+  MAINTENANCE (sync contract): everything generateAbout() emits must match the root
+  ABOUT.md template — same headings, same parseable lines 2-4. Changed a heading,
+  bullet or placeholder in ABOUT.md? Change it here too. The GROUPS taxonomy also
+  lives in .claude/commands/new-project.md — the two copies always move together.
 
-  The GROUPS taxonomy (what the project is → types → suggested pack) also lives in
-  .claude/commands/new-project.md — changed it here, change it there.
-
-  Language model of this file:
-  - The UI is bilingual: English by default, Portuguese via the EN/PT toggle in the
-    top-right corner. Translations live in the plain-JS I18N dictionary below.
-  - The GENERATED ABOUT.md is ALWAYS canonical English — headings, parse lines and
-    tone preset descriptions. Only values typed by the user keep whatever language
-    the user typed them in.
-  - The "Project language" field (line 4 of ABOUT.md) declares the language of the
-    project DELIVERABLES; it is independent from the UI toggle (the toggle only sets
-    its default).
+  Design: "soft brutalism" — paper background, heavy type, 3px ink borders, hard
+  offset shadows, one loud accent per step. Chosen via the template's own
+  design-direction process. UI is a step-by-step form (one screen per question,
+  no page scroll); the generated ABOUT.md is ALWAYS canonical English.
 
   Rules for this file: 100% self-contained (inline CSS/JS, zero external requests),
-  works via double click (file://).
+  works via double click (file://), bilingual UI (EN/PT dictionary).
 -->
 <html lang="en">
 <head>
@@ -31,703 +22,522 @@
   <title>ABOUT.md Wizard</title>
   <style>
     :root {
-      --bg: #f4f5f8;
-      --bg-raised: #ffffff;
-      --bg-inset: #eceef3;
-      --fg: #16181d;
-      --fg-soft: #4b5262;
-      --muted: #7a8294;
-      --border: #dde0e8;
-      --border-strong: #c6cbd6;
-      --accent: #4f46e5;
-      --accent-soft: #eef0ff;
-      --accent-border: #c3c7ff;
-      --accent-fg: #ffffff;
-      --editor-bg: #14161c;
-      --editor-fg: #d5dae4;
-      --editor-border: #262a34;
-      --editor-bar: #1c1f27;
-      --ok: #157f3d;
-      --warn: #b45309;
-      --shadow: 0 1px 2px rgb(22 24 29 / .05), 0 8px 24px -12px rgb(22 24 29 / .12);
-      --radius: 14px;
+      --paper: #faf5ec;
+      --panel: #fffdf7;
+      --ink: #141414;
+      --muted: #6b6558;
+      --accent: #ff6b57;
+      --shadow: 6px 6px 0 var(--ink);
+      --shadow-sm: 4px 4px 0 var(--ink);
+      --bw: 3px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0e1015;
-        --bg-raised: #171a21;
-        --bg-inset: #10131a;
-        --fg: #e8eaf0;
-        --fg-soft: #b6bcc9;
-        --muted: #8b93a5;
-        --border: #262b36;
-        --border-strong: #353c4a;
-        --accent: #818cf8;
-        --accent-soft: #1e2140;
-        --accent-border: #3f478a;
-        --accent-fg: #0d0f2b;
-        --editor-bg: #0a0c10;
-        --editor-fg: #ccd3df;
-        --editor-border: #22262f;
-        --editor-bar: #12151b;
-        --ok: #4ade80;
-        --warn: #fbbf24;
-        --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 10px 30px -12px rgb(0 0 0 / .6);
+        --paper: #171512;
+        --panel: #201d19;
+        --ink: #f2ecdf;
+        --muted: #a49c8b;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; }
+    [hidden] { display: none !important; }
+    html, body { height: 100%; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.45;
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .step-panel { animation: slam .18s ease-out; }
+      @keyframes slam {
+        from { transform: translateY(10px); opacity: 0; }
+        to { transform: none; opacity: 1; }
       }
     }
 
-    * { box-sizing: border-box; }
-    html, body { margin: 0; }
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font: 15.5px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* ===== Top bar ===== */
-    .topbar {
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-raised);
-    }
-    .topbar-inner {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 1.1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: .7rem;
-      margin-right: auto;
-    }
-    .brand-logo {
-      width: 38px; height: 38px;
-      border-radius: 11px;
-      background: linear-gradient(135deg, var(--accent), #9333ea);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      font-size: 1.05rem;
-      letter-spacing: -.02em;
-      flex: none;
-    }
-    .brand h1 { font-size: 1.08rem; margin: 0; line-height: 1.25; letter-spacing: -.01em; }
-    .brand p { margin: 0; font-size: .82rem; color: var(--muted); }
-
-    .steps {
-      display: flex;
-      align-items: center;
-      gap: .35rem;
-      font-size: .82rem;
-      color: var(--fg-soft);
-      flex-wrap: wrap;
-    }
-    .steps .step {
-      display: flex;
-      align-items: center;
-      gap: .45rem;
-      background: var(--bg-inset);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: .3rem .8rem .3rem .35rem;
-      white-space: nowrap;
-    }
-    .steps .n {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: var(--accent-fg);
-      display: grid; place-items: center;
-      font-size: .72rem; font-weight: 700;
-      flex: none;
-    }
-    .steps .arrow { color: var(--muted); }
-
     code {
       font-family: ui-monospace, Consolas, "Cascadia Mono", monospace;
-      font-size: .88em;
-      background: color-mix(in srgb, var(--fg) 8%, transparent);
-      padding: .08em .35em;
-      border-radius: 5px;
+      font-size: .9em;
+      background: color-mix(in srgb, var(--ink) 10%, transparent);
+      padding: .05em .3em;
     }
 
-    /* ===== Main grid ===== */
-    .wrap {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 1.75rem 1.5rem 5rem;
+    /* ===== Header ===== */
+    .topbar {
+      flex: none;
+      border-bottom: var(--bw) solid var(--ink);
+      background: var(--panel);
     }
-    main { display: grid; gap: 1.75rem; align-items: start; }
-    @media (min-width: 1024px) {
-      main { grid-template-columns: minmax(0, 1fr) minmax(0, 46%); }
+    .topbar-inner {
+      max-width: 1080px; margin: 0 auto;
+      padding: .7rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: .65rem; margin-right: auto; }
+    .brand-block {
+      width: 30px; height: 30px; flex: none;
+      background: var(--accent);
+      border: var(--bw) solid var(--ink);
+      box-shadow: 3px 3px 0 var(--ink);
+      transition: background .2s;
+    }
+    .brand h1 {
+      font-size: 1.02rem; font-weight: 900; letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .brand p { font-size: .74rem; color: var(--muted); font-weight: 600; }
+
+    .btabs { display: flex; gap: .5rem; }
+    .btab {
+      font: inherit; font-weight: 800; font-size: .8rem;
+      text-transform: uppercase; letter-spacing: .05em;
+      padding: .42rem .95rem;
+      background: var(--panel); color: var(--ink);
+      border: var(--bw) solid var(--ink);
+      cursor: pointer;
+      box-shadow: 3px 3px 0 var(--ink);
+    }
+    .btab[aria-pressed="true"] {
+      background: var(--ink); color: var(--paper);
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--ink);
+    }
+    .btab:focus-visible, .lang-btn:focus-visible {
+      outline: var(--bw) solid var(--accent); outline-offset: 2px;
     }
 
-    /* ===== Section cards ===== */
-    .card {
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+    .lang-toggle { display: flex; border: var(--bw) solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+    .lang-btn {
+      font: inherit; font-weight: 800; font-size: .78rem;
+      padding: .38rem .7rem; border: none; cursor: pointer;
+      background: var(--panel); color: var(--ink);
+    }
+    .lang-btn[aria-pressed="true"] { background: var(--accent); color: #141414; }
+
+    /* ===== Stage ===== */
+    .stage { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .step-wrap {
+      flex: 1; min-height: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem 1.25rem;
+    }
+    .step-panel {
+      width: min(860px, 100%);
+      max-height: 100%;
+      overflow: auto;             /* safety valve on short screens only */
+      background: var(--panel);
+      border: var(--bw) solid var(--ink);
       box-shadow: var(--shadow);
-      padding: 1.35rem 1.5rem 1.5rem;
-      margin: 0 0 1.25rem;
+      padding: clamp(1.2rem, 3vh, 2.2rem) clamp(1.2rem, 3.5vw, 2.6rem);
     }
-    .card-head {
-      display: flex;
-      align-items: baseline;
-      gap: .75rem;
+    .step-kicker {
+      display: inline-block;
+      font-size: .72rem; font-weight: 900; letter-spacing: .14em;
+      text-transform: uppercase;
+      background: var(--accent); color: #141414;
+      border: 2px solid var(--ink);
+      padding: .18rem .6rem;
+      box-shadow: 3px 3px 0 var(--ink);
+      margin-bottom: .9rem;
+      transition: background .2s;
+    }
+    .step-q {
+      font-size: clamp(1.5rem, 3.6vw, 2.5rem);
+      font-weight: 900; letter-spacing: -.02em; line-height: 1.08;
+      text-transform: uppercase;
       margin-bottom: .35rem;
     }
-    .card-num {
-      flex: none;
-      width: 26px; height: 26px;
-      border-radius: 8px;
-      background: var(--accent-soft);
-      border: 1px solid var(--accent-border);
-      color: var(--accent);
-      display: grid; place-items: center;
-      font-size: .8rem; font-weight: 800;
-      transform: translateY(3px);
-    }
-    .card-head h2 { font-size: 1.02rem; margin: 0; letter-spacing: -.01em; }
-    .card-sub { margin: 0 0 1.1rem 2.35rem; font-size: .84rem; color: var(--muted); }
+    .step-sub { color: var(--muted); font-weight: 600; font-size: .92rem; margin-bottom: 1.1rem; }
 
-    label { display: block; font-weight: 600; font-size: .87rem; margin: .95rem 0 .3rem; }
-    .field-pair { display: grid; gap: 0 1rem; }
-    @media (min-width: 560px) { .field-pair { grid-template-columns: 1fr 1fr; } }
-
+    label { display: block; font-weight: 800; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; margin: .9rem 0 .3rem; }
     input[type="text"], textarea, select {
       width: 100%;
-      padding: .58rem .75rem;
-      border: 1px solid var(--border-strong);
-      border-radius: 9px;
-      background: var(--bg-inset);
-      color: var(--fg);
-      font: inherit;
-      transition: border-color .12s, box-shadow .12s, background .12s;
+      font: inherit; font-weight: 600;
+      color: var(--ink); background: var(--paper);
+      border: var(--bw) solid var(--ink);
+      padding: .6rem .75rem;
+      border-radius: 0;
     }
-    input[type="text"]::placeholder, textarea::placeholder { color: var(--muted); opacity: .75; }
-    input[type="text"]:hover, textarea:hover, select:hover { background: var(--bg-raised); }
     input[type="text"]:focus, textarea:focus, select:focus {
       outline: none;
-      border-color: var(--accent);
-      background: var(--bg-raised);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+      box-shadow: var(--shadow-sm);
+      background: var(--panel);
     }
-    textarea { resize: vertical; min-height: 5.2rem; }
-    select { cursor: pointer; }
-
-    :is(button, a, input, textarea, select, [tabindex]):focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
+    input::placeholder, textarea::placeholder { color: var(--muted); opacity: .8; font-weight: 500; }
+    textarea { resize: vertical; min-height: 6rem; }
+    select { cursor: pointer; appearance: none;
+      background-image: linear-gradient(45deg, transparent 49%, var(--ink) 50%), linear-gradient(-45deg, transparent 49%, var(--ink) 50%);
+      background-position: calc(100% - 1.15rem) 55%, calc(100% - .75rem) 55%;
+      background-size: .4rem .4rem; background-repeat: no-repeat;
+      padding-right: 2.2rem;
     }
+    .big-input { font-size: 1.25rem; font-weight: 800; padding: .8rem .9rem; }
 
-    .hint { font-size: .8rem; color: var(--muted); margin: .4rem 0 0; }
-    .hint strong { color: var(--fg-soft); }
-    .hint.suggestion { color: var(--accent); font-weight: 600; }
+    .grid2 { display: grid; gap: 0 1.1rem; }
+    @media (min-width: 620px) { .grid2 { grid-template-columns: 1fr 1fr; } }
 
-    /* ===== Option cards (group / pack / tone) ===== */
-    .options { display: grid; gap: .6rem; margin-top: .2rem; }
-    @media (min-width: 640px) { .options.two-col { grid-template-columns: 1fr 1fr; } }
-    .option { position: relative; }
-    .option input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-    .option-body {
-      display: block;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      background: var(--bg-inset);
-      padding: .7rem .85rem .75rem 2.35rem;
+    /* ===== Choice cards ===== */
+    .choices { display: grid; gap: .7rem; margin-top: .3rem; }
+    .choices.g3 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .choice { position: relative; }
+    .choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .choice-body {
+      display: block; height: 100%;
+      border: var(--bw) solid var(--ink);
+      background: var(--panel);
+      padding: .7rem .85rem;
       cursor: pointer;
-      transition: border-color .12s, background .12s, box-shadow .12s;
-      height: 100%;
-      margin: 0;
-      font-weight: 400;
+      margin: 0; text-transform: none; letter-spacing: 0;
+      transition: transform .06s;
     }
-    .option-body::before {
-      content: "";
-      position: absolute;
-      left: .85rem; top: .95rem;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      border: 2px solid var(--border-strong);
-      background: var(--bg-raised);
-      transition: border-color .12s, box-shadow .12s;
+    .choice-body:hover { transform: translate(-1px, -1px); box-shadow: var(--shadow-sm); }
+    .choice input:checked + .choice-body {
+      background: var(--accent); color: #141414;
+      box-shadow: var(--shadow-sm);
+      transform: translate(-2px, -2px);
     }
-    .option input:checked + .option-body {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-    .option input:checked + .option-body::before {
-      border-color: var(--accent);
-      box-shadow: inset 0 0 0 4px var(--accent);
-    }
-    .option input:focus-visible + .option-body {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-    .option-title { display: block; font-weight: 700; font-size: .89rem; }
-    .option-desc { display: block; font-size: .8rem; color: var(--fg-soft); margin-top: .1rem; line-height: 1.45; }
+    .choice input:focus-visible + .choice-body { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
+    .choice-title { display: block; font-weight: 900; font-size: .92rem; text-transform: uppercase; letter-spacing: .02em; }
+    .choice-desc { display: block; font-weight: 600; font-size: .78rem; margin-top: .15rem; opacity: .82; line-height: 1.35; }
 
-    /* ===== Segmented toggle (superpowers, UI language) ===== */
-    .segmented {
-      display: inline-flex;
-      border: 1px solid var(--border-strong);
-      border-radius: 10px;
-      background: var(--bg-inset);
-      padding: 3px;
-      gap: 3px;
-      margin-top: .2rem;
-    }
-    .segmented .option input:checked + .option-body {
-      background: var(--accent);
-      color: var(--accent-fg);
-      border-color: var(--accent);
-      box-shadow: none;
-    }
-    .segmented .option-body {
-      border: 1px solid transparent;
-      border-radius: 8px;
-      padding: .42rem 1.1rem;
-      font-weight: 600;
-      font-size: .87rem;
-      background: transparent;
-    }
-    .segmented .option-body::before { display: none; }
+    .seg { display: inline-flex; border: var(--bw) solid var(--ink); box-shadow: var(--shadow-sm); }
+    .seg .choice-body { border: none; padding: .5rem 1.3rem; font-weight: 800; text-transform: uppercase; font-size: .85rem; }
+    .seg .choice-body:hover { transform: none; box-shadow: none; }
+    .seg .choice input:checked + .choice-body { transform: none; box-shadow: none; }
 
-    /* Compact variant for the top-right EN/PT toggle */
-    .lang-toggle { margin-top: 0; flex: none; }
-    .lang-toggle .option-body { padding: .3rem .8rem; font-size: .8rem; font-weight: 700; }
+    .hint { font-size: .82rem; color: var(--muted); font-weight: 600; margin-top: .6rem; }
+    .pack-chip {
+      display: inline-block; font-weight: 900; text-transform: uppercase; font-size: .85rem;
+      border: var(--bw) solid var(--ink); background: var(--accent); color: #141414;
+      box-shadow: var(--shadow-sm); padding: .35rem .8rem; margin: .5rem .5rem .5rem 0;
+    }
+    details.packswap summary {
+      cursor: pointer; font-weight: 800; font-size: .78rem; text-transform: uppercase;
+      letter-spacing: .05em; color: var(--muted); list-style: none; display: inline-block;
+      border-bottom: 2px solid var(--muted); margin-top: .2rem;
+    }
+    details.packswap summary::-webkit-details-marker { display: none; }
+    details.packswap[open] summary { color: var(--ink); border-color: var(--ink); }
 
-    /* ===== Preview panel (editor style) ===== */
-    .output { position: sticky; top: 1.25rem; }
+    /* ===== Footer nav ===== */
+    .navbar {
+      flex: none;
+      border-top: var(--bw) solid var(--ink);
+      background: var(--panel);
+    }
+    .navbar-inner {
+      max-width: 1080px; margin: 0 auto;
+      padding: .65rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .bbtn {
+      font: inherit; font-weight: 900; font-size: .9rem;
+      text-transform: uppercase; letter-spacing: .05em;
+      padding: .6rem 1.4rem;
+      border: var(--bw) solid var(--ink);
+      background: var(--panel); color: var(--ink);
+      cursor: pointer; box-shadow: var(--shadow-sm);
+      transition: transform .06s, box-shadow .06s;
+    }
+    .bbtn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+    .bbtn:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
+    .bbtn.primary { background: var(--accent); color: #141414; }
+    .bbtn:disabled { opacity: .35; cursor: default; transform: none; box-shadow: var(--shadow-sm); }
+    .bbtn:focus-visible { outline: var(--bw) solid var(--accent); outline-offset: 2px; }
+    .nav-mid { margin: 0 auto; display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; justify-content: center; }
+    .dot {
+      width: 22px; height: 22px; flex: none;
+      border: 2px solid var(--ink); background: var(--panel);
+      font-size: .68rem; font-weight: 900; color: var(--ink);
+      display: grid; place-items: center; cursor: pointer; padding: 0;
+    }
+    .dot[aria-current="step"] { background: var(--accent); color: #141414; box-shadow: 2px 2px 0 var(--ink); }
+    .dot.done { background: var(--ink); color: var(--paper); }
+    .dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .enter-hint { font-size: .72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ===== Review step ===== */
     .editor {
-      border: 1px solid var(--editor-border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      background: var(--editor-bg);
+      border: var(--bw) solid var(--ink);
+      box-shadow: var(--shadow-sm);
+      background: #14161c;
+      margin-top: .4rem;
     }
     .editor-bar {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      background: var(--editor-bar);
-      border-bottom: 1px solid var(--editor-border);
-      padding: .6rem .9rem;
+      display: flex; align-items: center; gap: .7rem;
+      background: var(--ink); color: var(--paper);
+      padding: .45rem .8rem;
+      font-weight: 800; font-size: .78rem; text-transform: uppercase; letter-spacing: .05em;
     }
-    .dots { display: flex; gap: .4rem; flex: none; }
-    .dots i {
-      width: 11px; height: 11px;
-      border-radius: 50%;
-      background: #3a3f4c;
-    }
-    .editor-bar .name {
-      font: .8rem/1 ui-monospace, Consolas, "Cascadia Mono", monospace;
-      color: #9aa3b4;
-      margin-right: auto;
-    }
+    .editor-bar .name { margin-right: auto; font-family: ui-monospace, Consolas, monospace; text-transform: none; letter-spacing: 0; }
     .badge {
-      font-size: .74rem;
-      font-weight: 700;
-      border-radius: 999px;
-      padding: .2rem .65rem;
-      white-space: nowrap;
+      font-size: .72rem; font-weight: 900; text-transform: uppercase;
+      padding: .15rem .6rem; border: 2px solid var(--paper);
     }
-    .badge.pending { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
-    .badge.ready { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
-    pre {
-      margin: 0;
-      padding: 1.1rem 1.2rem 1.4rem;
-      overflow: auto;
-      max-height: min(66vh, 640px);
-      font: .78rem/1.6 ui-monospace, Consolas, "Cascadia Mono", monospace;
-      color: var(--editor-fg);
-      white-space: pre;
+    .badge.pending { background: #ffc233; color: #141414; border-color: #141414; }
+    .badge.ready { background: #5be36b; color: #141414; border-color: #141414; }
+    pre#preview {
+      margin: 0; padding: .9rem 1rem;
+      overflow: auto; max-height: 34vh;
+      font: .74rem/1.55 ui-monospace, Consolas, "Cascadia Mono", monospace;
+      color: #d5dae4; white-space: pre;
     }
+    .actions { display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+    #status { font-size: .82rem; font-weight: 800; color: var(--ink); }
+    .footer-hint { font-size: .8rem; color: var(--muted); font-weight: 600; margin-top: .8rem; }
 
-    .actions {
-      display: flex;
-      gap: .7rem;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 1rem;
+    /* ===== Guide view (scrollable) ===== */
+    .guide-scroll { flex: 1; min-height: 0; overflow: auto; padding: 1.25rem; }
+    .guide { display: grid; gap: 1.2rem; max-width: 940px; margin: 0 auto; }
+    .card {
+      background: var(--panel);
+      border: var(--bw) solid var(--ink);
+      box-shadow: var(--shadow);
+      padding: 1.2rem 1.4rem 1.4rem;
     }
-    button {
-      font: inherit;
-      font-weight: 700;
-      font-size: .92rem;
-      padding: .62rem 1.35rem;
-      border-radius: 10px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: transform .06s, filter .12s, background .12s;
-    }
-    button:active { transform: translateY(1px); }
-    .primary {
-      background: var(--accent);
-      color: var(--accent-fg);
-      box-shadow: 0 2px 10px -2px color-mix(in srgb, var(--accent) 55%, transparent);
-    }
-    .primary:hover { filter: brightness(1.08); }
-    .secondary {
-      background: var(--bg-raised);
-      color: var(--fg);
-      border-color: var(--border-strong);
-    }
-    .secondary:hover { border-color: var(--accent); color: var(--accent); }
-    #status { font-size: .87rem; font-weight: 600; color: var(--ok); }
-
-    .footer-hint {
-      margin-top: 1rem;
-      font-size: .8rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-    /* ===== View tabs (Briefing | Guide) ===== */
-    [hidden] { display: none !important; }
-    .view-tabs { display: flex; justify-content: center; margin: 0 0 1.6rem; }
-    .view-tabs .option-body { padding: .5rem 1.6rem; font-size: .95rem; }
-
-    /* ===== Guide view ===== */
-    .guide { display: grid; gap: 1.25rem; max-width: 980px; margin: 0 auto; }
-    .guide-grid { display: grid; gap: .9rem; }
+    .card-head { display: flex; align-items: baseline; gap: .6rem; margin-bottom: .3rem; }
+    .card-num { flex: none; font-size: 1rem; }
+    .card-head h2 { font-size: 1.05rem; font-weight: 900; text-transform: uppercase; letter-spacing: .02em; }
+    .card-sub { color: var(--muted); font-weight: 600; font-size: .86rem; margin-bottom: .9rem; }
+    .guide-grid { display: grid; gap: .8rem; }
     @media (min-width: 760px) {
       .guide-grid.three { grid-template-columns: repeat(3, 1fr); }
       .guide-grid.two { grid-template-columns: 1fr 1fr; }
     }
-    .tile {
-      border: 1px solid var(--border); border-radius: 11px;
-      background: var(--bg-inset); padding: .95rem 1.05rem;
-    }
-    .tile h3 { font-size: .95rem; margin: 0 0 .45rem; }
-    .tile p, .tile li { font-size: .86rem; color: var(--fg-soft); line-height: 1.55; }
-    .tile p { margin: 0; }
-    .tile ol { margin: .2rem 0 0 1.15rem; padding: 0; }
+    .tile { border: 2px solid var(--ink); background: var(--paper); padding: .85rem .95rem; box-shadow: 3px 3px 0 var(--ink); }
+    .tile h3 { font-size: .88rem; font-weight: 900; margin-bottom: .4rem; }
+    .tile p, .tile li { font-size: .82rem; font-weight: 600; color: var(--ink); line-height: 1.5; }
+    .tile p { opacity: .85; }
+    .tile ol { margin: .1rem 0 0 1.1rem; padding: 0; }
     .tile li { margin: .3rem 0; }
     .tile .when {
-      display: inline-block; font-size: .72rem; font-weight: 700;
-      color: var(--accent); background: var(--accent-soft);
-      border: 1px solid var(--accent-border); border-radius: 999px;
-      padding: .12rem .6rem; margin-bottom: .5rem;
+      display: inline-block; font-size: .68rem; font-weight: 900; text-transform: uppercase;
+      background: var(--accent); color: #141414; border: 2px solid var(--ink);
+      padding: .1rem .5rem; margin-bottom: .45rem;
     }
-    .flow-line { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; font-weight: 600; font-size: .88rem; }
-    .flow-line .fstep { background: var(--bg-inset); border: 1px solid var(--border); border-radius: 999px; padding: .35rem .85rem; }
-    .flow-line .farrow { color: var(--muted); }
-    .auto-row { display: flex; gap: .7rem; align-items: baseline; padding: .55rem 0; border-bottom: 1px dashed var(--border); font-size: .9rem; }
+    .flow-line { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; font-weight: 800; font-size: .85rem; }
+    .flow-line .fstep { background: var(--paper); border: 2px solid var(--ink); padding: .3rem .75rem; box-shadow: 2px 2px 0 var(--ink); }
+    .flow-line .farrow { font-weight: 900; }
+    .auto-row { display: flex; gap: .65rem; align-items: baseline; padding: .5rem 0; border-bottom: 2px dashed color-mix(in srgb, var(--ink) 30%, transparent); font-size: .88rem; font-weight: 600; }
     .auto-row:last-child { border-bottom: none; }
-    .auto-row .emoji { flex: none; }
-    .rule { display: flex; gap: .8rem; margin: .65rem 0; font-size: .92rem; align-items: baseline; }
+    .rule { display: flex; gap: .7rem; margin: .6rem 0; font-size: .9rem; font-weight: 600; align-items: baseline; }
     .rule .num {
-      flex: none; width: 24px; height: 24px; border-radius: 8px;
-      background: var(--accent); color: var(--accent-fg);
-      display: grid; place-items: center; font-size: .8rem; font-weight: 800;
-      transform: translateY(3px);
+      flex: none; width: 24px; height: 24px;
+      background: var(--ink); color: var(--paper);
+      display: grid; place-items: center; font-size: .8rem; font-weight: 900;
+      transform: translateY(3px); border: 2px solid var(--ink);
     }
-    .guide-note { font-size: .85rem; color: var(--muted); margin: .3rem 0 0; }
+    .guide-note { font-size: .82rem; color: var(--muted); font-weight: 600; margin-top: .5rem; }
   </style>
 </head>
 <body>
+
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand">
-        <div class="brand-logo" aria-hidden="true">A</div>
+        <div class="brand-block" id="brandBlock" aria-hidden="true"></div>
         <div>
           <h1 data-i18n="title">ABOUT.md Wizard</h1>
           <p data-i18n="tagline">Project briefing in 2 minutes — without touching any other file</p>
         </div>
       </div>
-      <nav class="steps" aria-label="How to use in 3 steps" data-i18n-aria="stepsAria">
-        <span class="step"><span class="n">1</span> <span data-i18n="step1">Fill in</span></span>
-        <span class="arrow" aria-hidden="true">→</span>
-        <span class="step"><span class="n">2</span> <span data-i18n="step2">Download to the project root</span></span>
-        <span class="arrow" aria-hidden="true">→</span>
-        <span class="step"><span class="n">3</span> <span data-i18n-html="step3"><code>/new-project</code> in Claude Code</span></span>
-      </nav>
-      <!-- UI language toggle: changes the wizard chrome only.
-           The generated ABOUT.md stays canonical English either way. -->
-      <div class="segmented lang-toggle" role="radiogroup" aria-label="Interface language" data-i18n-aria="langToggleAria">
-        <span class="option">
-          <input type="radio" name="uiLang" id="uilang-en" value="en" checked>
-          <label class="option-body" for="uilang-en">EN</label>
-        </span>
-        <span class="option">
-          <input type="radio" name="uiLang" id="uilang-pt" value="pt">
-          <label class="option-body" for="uilang-pt">PT</label>
-        </span>
+      <div class="btabs" role="group" aria-label="View" data-i18n-aria="viewAria">
+        <button type="button" class="btab" id="tabBriefing" aria-pressed="true" data-i18n="tabBriefingB">Briefing</button>
+        <button type="button" class="btab" id="tabGuide" aria-pressed="false" data-i18n="tabGuideB">Guide</button>
+      </div>
+      <div class="lang-toggle" role="group" aria-label="Interface language" data-i18n-aria="langToggleAria">
+        <button type="button" class="lang-btn" id="langEn" aria-pressed="true">EN</button>
+        <button type="button" class="lang-btn" id="langPt" aria-pressed="false">PT</button>
       </div>
     </div>
   </header>
 
-  <div class="wrap">
-    <!-- View switcher: the wizard is the human hub — Briefing (form) and Guide (how to work). -->
-    <div class="segmented view-tabs" role="radiogroup" aria-label="View" data-i18n-aria="viewAria">
-      <span class="option">
-        <input type="radio" name="view" id="view-b" value="briefing" checked>
-        <label class="option-body" for="view-b" data-i18n="tabBriefing">✍️ Briefing</label>
-      </span>
-      <span class="option">
-        <input type="radio" name="view" id="view-g" value="guide">
-        <label class="option-body" for="view-g" data-i18n="tabGuide">📖 Guide</label>
-      </span>
-    </div>
+  <!-- ===== Briefing: step machine ===== -->
+  <div class="stage" id="briefingView">
+    <form id="form" autocomplete="off" class="step-wrap">
 
-    <main id="briefingView">
-      <!-- Column 1: form. Sections mirror the root ABOUT.md template headings 1:1. -->
-      <form id="form" autocomplete="off">
+      <!-- STEP 1 — name -->
+      <section class="step-panel" data-step="1">
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="s1Q">Name the project</h2>
+        <p class="step-sub" data-i18n="s1Sub">Client or codename — it becomes the title of ABOUT.md.</p>
+        <input class="big-input" id="projectName" name="projectName" type="text"
+               placeholder="e.g., Smile Clinic website" data-i18n-placeholder="projectNamePh"
+               aria-label="Project name" data-i18n-aria="projectNameLabel">
+      </section>
 
-        <section class="card">
-          <div class="card-head"><span class="card-num">1</span><h2 data-i18n="c1Title">What is the project?</h2></div>
-          <p class="card-sub" data-i18n="c1Sub">Pick the group, then the specific type — the right stack comes along for free.</p>
+      <!-- STEP 2 — group -->
+      <section class="step-panel" data-step="2" hidden>
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="c1Title">What is the project?</h2>
+        <p class="step-sub" data-i18n="s2Sub">Pick the group — type and stack follow from it.</p>
+        <div class="choices g3" role="radiogroup" aria-label="Group" data-i18n-aria="groupLabel">
+          <span class="choice"><input type="radio" name="group" id="g-site" value="site" checked>
+            <label class="choice-body" for="g-site"><span class="choice-title">Site &amp; content</span><span class="choice-desc" data-i18n="gdSite">Institutional, landing, blog, events</span></label></span>
+          <span class="choice"><input type="radio" name="group" id="g-ecom" value="ecommerce">
+            <label class="choice-body" for="g-ecom"><span class="choice-title">E-commerce &amp; sales</span><span class="choice-desc" data-i18n="gdEcom">Store, B2B, delivery, subscriptions</span></label></span>
+          <span class="choice"><input type="radio" name="group" id="g-sys" value="system">
+            <label class="choice-body" for="g-sys"><span class="choice-title">Web system</span><span class="choice-desc" data-i18n="gdSys">Panels, client areas, CRM, niche</span></label></span>
+          <span class="choice"><input type="radio" name="group" id="g-api" value="api">
+            <label class="choice-body" for="g-api"><span class="choice-title">API &amp; integrations</span><span class="choice-desc" data-i18n="gdApi">REST, payments, WhatsApp, ERP</span></label></span>
+          <span class="choice"><input type="radio" name="group" id="g-auto" value="automation">
+            <label class="choice-body" for="g-auto"><span class="choice-title">Automation &amp; bots</span><span class="choice-desc" data-i18n="gdAuto">Bots, AI chat, routines, data</span></label></span>
+          <span class="choice"><input type="radio" name="group" id="g-int" value="internal">
+            <label class="choice-body" for="g-int"><span class="choice-title">Internal use</span><span class="choice-desc" data-i18n="gdInt">Our own tools and scripts</span></label></span>
+        </div>
+      </section>
 
-          <label for="projectName" data-i18n="projectNameLabel">Project name</label>
-          <input id="projectName" name="projectName" type="text" placeholder="e.g., Smile Clinic website" data-i18n-placeholder="projectNamePh">
-
-          <label id="groupLabel" data-i18n="groupLabel">Group</label>
-          <!-- Group and type option labels stay in English in BOTH UI languages (v1):
-               they are the canonical taxonomy and go verbatim into line 3 of ABOUT.md. -->
-          <div class="options two-col" role="radiogroup" aria-labelledby="groupLabel">
-            <span class="option">
-              <input type="radio" name="group" id="group-site" value="site" checked>
-              <label class="option-body" for="group-site">
-                <span class="option-title">Site &amp; content</span>
-                <span class="option-desc">Institutional, landing page, hotsite, blog, events</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="group" id="group-ecommerce" value="ecommerce">
-              <label class="option-body" for="group-ecommerce">
-                <span class="option-title">E-commerce &amp; sales</span>
-                <span class="option-desc">Online store, B2B, delivery, subscription club</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="group" id="group-system" value="system">
-              <label class="option-body" for="group-system">
-                <span class="option-title">Web system &amp; logged-in areas</span>
-                <span class="option-desc">Admin panel, client area, scheduling, CRM, niche</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="group" id="group-api" value="api">
-              <label class="option-body" for="group-api">
-                <span class="option-title">API &amp; integrations</span>
-                <span class="option-desc">REST API, payment gateways, WhatsApp, ERP/CRM</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="group" id="group-automation" value="automation">
-              <label class="option-body" for="group-automation">
-                <span class="option-title">Automation &amp; bots</span>
-                <span class="option-desc">WhatsApp bot, AI chatbot, routines, data collection</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="group" id="group-internal" value="internal">
-              <label class="option-body" for="group-internal">
-                <span class="option-title">Internal agency use</span>
-                <span class="option-desc">Our own tools, scripts and boilerplates</span>
-              </label>
-            </span>
+      <!-- STEP 3 — type + pack -->
+      <section class="step-panel" data-step="3" hidden>
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="s3Q">Which type, exactly?</h2>
+        <p class="step-sub" data-i18n="typeHint">Group + type go on line 3 of ABOUT.md and guide pack, agents and the process recommendation.</p>
+        <label for="specificType" data-i18n="typeLabel">Specific type</label>
+        <select id="specificType" name="specificType"></select>
+        <div>
+          <span class="pack-chip" id="packChip"></span>
+        </div>
+        <details class="packswap">
+          <summary data-i18n="changePack">change the suggested pack</summary>
+          <div class="choices g3" style="margin-top:.7rem" role="radiogroup" aria-label="Active pack" data-i18n-aria="packAria">
+            <span class="choice"><input type="radio" name="pack" id="p-none" value="none">
+              <label class="choice-body" for="p-none"><span class="choice-title">none</span><span class="choice-desc" data-i18n="packNoneDesc">Decide later — Claude asks before assuming a stack</span></label></span>
+            <span class="choice"><input type="radio" name="pack" id="p-static" value="static" checked>
+              <label class="choice-body" for="p-static"><span class="choice-title">static</span><span class="choice-desc" data-i18n="packStaticDesc">Plain HTML/CSS/JS: landing pages, institutional, one-pagers</span></label></span>
+            <span class="choice"><input type="radio" name="pack" id="p-next" value="nextjs">
+              <label class="choice-body" for="p-next"><span class="choice-title">nextjs</span><span class="choice-desc" data-i18n="packNextDesc">Next.js App Router (TS): e-commerce, systems, blogs</span></label></span>
+            <span class="choice"><input type="radio" name="pack" id="p-node" value="node-api">
+              <label class="choice-body" for="p-node"><span class="choice-title">node-api</span><span class="choice-desc" data-i18n="packNodeDesc">Node.js (TS) backend API/service, separate from the frontend</span></label></span>
+            <span class="choice"><input type="radio" name="pack" id="p-py" value="python">
+              <label class="choice-body" for="p-py"><span class="choice-title">python</span><span class="choice-desc" data-i18n="packPyDesc">FastAPI, automations, bots and Python scripts</span></label></span>
           </div>
+        </details>
+      </section>
 
-          <label for="specificType" data-i18n="typeLabel">Specific type</label>
-          <select id="specificType" name="specificType"></select>
-          <p class="hint" data-i18n="typeHint">Group + type go on line 3 of ABOUT.md and guide pack, agents and the process recommendation.</p>
-
-          <label for="projectLang" data-i18n="projectLangLabel">Project language</label>
-          <select id="projectLang" name="projectLang">
-            <option value="en">en — English</option>
-            <option value="pt-BR">pt-BR — Português (Brasil)</option>
-            <option value="es">es — Español</option>
-          </select>
-          <p class="hint" data-i18n="projectLangHint">Goes on line 4. All client-facing deliverables — copy, UI strings, error messages, client docs — are written in this language.</p>
-        </section>
-
-        <section class="card">
-          <div class="card-head"><span class="card-num">2</span><h2 data-i18n="c2Title">Stack (pack)</h2></div>
-          <p class="card-sub" data-i18n="c2Sub">Pre-selected based on the chosen type — change it only if you know why.</p>
-
-          <div class="options two-col" role="radiogroup" aria-label="Active pack" data-i18n-aria="packAria">
-            <span class="option">
-              <input type="radio" name="pack" id="pack-none" value="none">
-              <label class="option-body" for="pack-none">
-                <span class="option-title">none</span>
-                <span class="option-desc" data-i18n="packNoneDesc">Decide later — Claude asks before assuming a stack</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="pack" id="pack-static" value="static" checked>
-              <label class="option-body" for="pack-static">
-                <span class="option-title">static</span>
-                <span class="option-desc" data-i18n="packStaticDesc">Plain HTML/CSS/JS: landing pages, institutional, one-pagers</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="pack" id="pack-nextjs" value="nextjs">
-              <label class="option-body" for="pack-nextjs">
-                <span class="option-title">nextjs</span>
-                <span class="option-desc" data-i18n="packNextDesc">Next.js App Router (TS): e-commerce, systems, blogs</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="pack" id="pack-node" value="node-api">
-              <label class="option-body" for="pack-node">
-                <span class="option-title">node-api</span>
-                <span class="option-desc" data-i18n="packNodeDesc">Node.js (TS) backend API/service, separate from the frontend</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="pack" id="pack-python" value="python">
-              <label class="option-body" for="pack-python">
-                <span class="option-title">python</span>
-                <span class="option-desc" data-i18n="packPyDesc">FastAPI, automations, bots and Python scripts</span>
-              </label>
-            </span>
+      <!-- STEP 4 — client & goal -->
+      <section class="step-panel" data-step="4" hidden>
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="c3Title">Client and goal</h2>
+        <p class="step-sub" data-i18n="c3Sub">Who the client is and what result the project must produce.</p>
+        <div class="grid2">
+          <div>
+            <label for="clientName" data-i18n="clientLabel">Client name</label>
+            <input id="clientName" type="text" placeholder="e.g., Smile Clinic LLC" data-i18n-placeholder="clientPh">
           </div>
-          <p class="hint suggestion" id="packHint" aria-live="polite"></p>
-        </section>
-
-        <section class="card">
-          <div class="card-head"><span class="card-num">3</span><h2 data-i18n="c3Title">Client and goal</h2></div>
-          <p class="card-sub" data-i18n="c3Sub">Who the client is and what result the project must produce.</p>
-
-          <div class="field-pair">
-            <div>
-              <label for="clientName" data-i18n="clientLabel">Client name</label>
-              <input id="clientName" name="clientName" type="text" placeholder="e.g., Smile Clinic LLC" data-i18n-placeholder="clientPh">
-            </div>
-            <div>
-              <label for="segment" data-i18n="segmentLabel">Segment</label>
-              <input id="segment" name="segment" type="text" placeholder="e.g., dental clinic in Austin" data-i18n-placeholder="segmentPh">
-            </div>
+          <div>
+            <label for="segment" data-i18n="segmentLabel">Segment</label>
+            <input id="segment" type="text" placeholder="e.g., dental clinic in Austin" data-i18n-placeholder="segmentPh">
           </div>
-
-          <label for="goal" data-i18n="goalLabel">Project goal</label>
-          <input id="goal" name="goal" type="text" placeholder="e.g., institutional site that generates quote requests" data-i18n-placeholder="goalPh">
-
-          <div class="field-pair">
-            <div>
-              <label for="conversion" data-i18n="conversionLabel">Primary conversion</label>
-              <input id="conversion" name="conversion" type="text" placeholder="e.g., quote form submission" data-i18n-placeholder="conversionPh">
-            </div>
-            <div>
-              <label for="deadline" data-i18n="deadlineLabel">Delivery deadline</label>
-              <input id="deadline" name="deadline" type="text" placeholder="e.g., 2026-09-15" data-i18n-placeholder="deadlinePh">
-            </div>
+        </div>
+        <label for="goal" data-i18n="goalLabel">Project goal</label>
+        <input id="goal" type="text" placeholder="e.g., institutional site that generates quote requests" data-i18n-placeholder="goalPh">
+        <div class="grid2">
+          <div>
+            <label for="conversion" data-i18n="conversionLabel">Primary conversion</label>
+            <input id="conversion" type="text" placeholder="e.g., quote form submission" data-i18n-placeholder="conversionPh">
           </div>
-        </section>
-
-        <section class="card">
-          <div class="card-head"><span class="card-num">4</span><h2 data-i18n="c4Title">Audience and tone of voice</h2></div>
-          <p class="card-sub" data-i18n="c4Sub">Who visits the site and the reference tone the copywriter will follow.</p>
-
-          <label for="audience" data-i18n="audienceLabel">Audience</label>
-          <input id="audience" name="audience" type="text" placeholder="e.g., small-business owners, 30–55, research on their phones" data-i18n-placeholder="audiencePh">
-
-          <label id="toneLabel" data-i18n="toneLabel">Tone of voice</label>
-          <div class="options" role="radiogroup" aria-labelledby="toneLabel">
-            <span class="option">
-              <input type="radio" name="tone" id="tone-institutional" value="institutional" checked>
-              <label class="option-body" for="tone-institutional">
-                <span class="option-title" data-i18n="toneInstTitle">Sober institutional</span>
-                <span class="option-desc" data-i18n="toneInstDesc">Trustworthy, no slang, no artificial urgency — professional offices, clinics, industry, B2B</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="tone" id="tone-ecommerce" value="ecommerce">
-              <label class="option-body" for="tone-ecommerce">
-                <span class="option-title" data-i18n="toneEcomTitle">Persuasive e-commerce</span>
-                <span class="option-desc" data-i18n="toneEcomDesc">Direct, value- and trust-driven; urgency only when it is real — online stores</span>
-              </label>
-            </span>
-            <span class="option">
-              <input type="radio" name="tone" id="tone-landing" value="landing">
-              <label class="option-body" for="tone-landing">
-                <span class="option-title" data-i18n="toneLandTitle">Conversion landing</span>
-                <span class="option-desc" data-i18n="toneLandDesc">One promise, one offer, one repeated CTA; zero escape navigation — campaigns</span>
-              </label>
-            </span>
+          <div>
+            <label for="deadline" data-i18n="deadlineLabel">Delivery deadline</label>
+            <input id="deadline" type="text" placeholder="e.g., 2026-09-15" data-i18n-placeholder="deadlinePh">
           </div>
+        </div>
+      </section>
 
-          <label for="voiceNotes" data-i18n="voiceLabel">Voice notes (optional)</label>
-          <input id="voiceNotes" name="voiceNotes" type="text" placeholder='e.g., client says "consultation", never "appointment"; the word "cheap" is banned' data-i18n-placeholder="voicePh">
-        </section>
+      <!-- STEP 5 — audience & tone -->
+      <section class="step-panel" data-step="5" hidden>
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="c4Title">Audience and tone of voice</h2>
+        <p class="step-sub" data-i18n="c4Sub">Who visits the site and the reference tone the copywriter will follow.</p>
+        <label for="audience" data-i18n="audienceLabel">Audience</label>
+        <input id="audience" type="text" placeholder="e.g., small-business owners, 30–55, research on their phones" data-i18n-placeholder="audiencePh">
+        <label data-i18n="toneLabel" id="toneLabelEl">Tone of voice</label>
+        <div class="choices g3" role="radiogroup" aria-labelledby="toneLabelEl">
+          <span class="choice"><input type="radio" name="tone" id="t-inst" value="institutional" checked>
+            <label class="choice-body" for="t-inst"><span class="choice-title" data-i18n="toneInstTitle">Sober institutional</span><span class="choice-desc" data-i18n="toneInstDesc">Trustworthy, no slang, no artificial urgency — professional offices, clinics, industry, B2B</span></label></span>
+          <span class="choice"><input type="radio" name="tone" id="t-ecom" value="ecommerce">
+            <label class="choice-body" for="t-ecom"><span class="choice-title" data-i18n="toneEcomTitle">Persuasive e-commerce</span><span class="choice-desc" data-i18n="toneEcomDesc">Direct, value- and trust-driven; urgency only when it is real — online stores</span></label></span>
+          <span class="choice"><input type="radio" name="tone" id="t-land" value="landing">
+            <label class="choice-body" for="t-land"><span class="choice-title" data-i18n="toneLandTitle">Conversion landing</span><span class="choice-desc" data-i18n="toneLandDesc">One promise, one offer, one repeated CTA; zero escape navigation — campaigns</span></label></span>
+        </div>
+        <label for="voiceNotes" data-i18n="voiceLabel">Voice notes (optional)</label>
+        <input id="voiceNotes" type="text" placeholder='e.g., client says "consultation", never "appointment"; the word "cheap" is banned' data-i18n-placeholder="voicePh">
+      </section>
 
-        <section class="card">
-          <div class="card-head"><span class="card-num">5</span><h2 data-i18n="c5Title">Project commands</h2></div>
-          <p class="card-sub" data-i18n-html="c5Sub">How to run the project — agents and <code>/design-review</code> read from here. Leave blank if it does not exist yet (the scaffold fills it in later).</p>
-
-          <div class="field-pair">
-            <div>
-              <label for="cmdDev" data-i18n="cmdDevLabel">dev (run locally)</label>
-              <input id="cmdDev" name="cmdDev" type="text" placeholder="e.g., npm run dev" data-i18n-placeholder="cmdDevPh">
-            </div>
-            <div>
-              <label for="cmdBuild" data-i18n="cmdBuildLabel">build</label>
-              <input id="cmdBuild" name="cmdBuild" type="text" placeholder="e.g., npm run build" data-i18n-placeholder="cmdBuildPh">
-            </div>
-            <div>
-              <label for="cmdTest" data-i18n="cmdTestLabel">test</label>
-              <input id="cmdTest" name="cmdTest" type="text" placeholder='e.g., npm run test — or "none"' data-i18n-placeholder="cmdTestPh">
-            </div>
-            <div>
-              <label for="localUrl" data-i18n="localUrlLabel">Local URL</label>
-              <input id="localUrl" name="localUrl" type="text" placeholder="e.g., http://localhost:3000" data-i18n-placeholder="localUrlPh">
-            </div>
+      <!-- STEP 6 — commands -->
+      <section class="step-panel" data-step="6" hidden>
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="c5Title">Project commands</h2>
+        <p class="step-sub" data-i18n-html="c5Sub">How to run the project — agents and <code>/design-review</code> read from here. Leave blank if it does not exist yet (the scaffold fills it in later).</p>
+        <div class="grid2">
+          <div>
+            <label for="cmdDev" data-i18n="cmdDevLabel">dev (run locally)</label>
+            <input id="cmdDev" type="text" placeholder="e.g., npm run dev" data-i18n-placeholder="cmdDevPh">
           </div>
-        </section>
-
-        <section class="card">
-          <div class="card-head"><span class="card-num">6</span><h2 data-i18n="c6Title">Process</h2></div>
-          <p class="card-sub" data-i18n="c6Sub">Superpowers = process skills (brainstorming, written plans, TDD).</p>
-
-          <label id="spLabel" data-i18n="spLabel">Use superpowers on this project?</label>
-          <div class="segmented" role="radiogroup" aria-labelledby="spLabel">
-            <span class="option">
-              <input type="radio" name="superpowers" id="sp-no" value="no" checked>
-              <label class="option-body" for="sp-no" data-i18n="spNo">No</label>
-            </span>
-            <span class="option">
-              <input type="radio" name="superpowers" id="sp-yes" value="yes">
-              <label class="option-body" for="sp-yes" data-i18n="spYes">Yes</label>
-            </span>
+          <div>
+            <label for="cmdBuild" data-i18n="cmdBuildLabel">build</label>
+            <input id="cmdBuild" type="text" placeholder="e.g., npm run build" data-i18n-placeholder="cmdBuildPh">
           </div>
-          <p class="hint" id="spHint" data-i18n-html="spHint"><strong>Yes</strong> for e-commerce and systems (1+ week, interdependent features); <strong>no</strong> for short-deadline landing pages — the overhead does not pay for itself.</p>
-        </section>
+          <div>
+            <label for="cmdTest" data-i18n="cmdTestLabel">test</label>
+            <input id="cmdTest" type="text" placeholder='e.g., npm run test — or "none"' data-i18n-placeholder="cmdTestPh">
+          </div>
+          <div>
+            <label for="localUrl" data-i18n="localUrlLabel">Local URL</label>
+            <input id="localUrl" type="text" placeholder="e.g., http://localhost:3000" data-i18n-placeholder="localUrlPh">
+          </div>
+        </div>
+      </section>
 
-        <section class="card">
-          <div class="card-head"><span class="card-num">7</span><h2 data-i18n="c7Title">Constraints and notes</h2></div>
-          <p class="card-sub" data-i18n="c7Sub">Everything Claude needs to know to avoid mistakes: technical limits, closed decisions, integrations.</p>
+      <!-- STEP 7 — language & process -->
+      <section class="step-panel" data-step="7" hidden>
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="s7Q">Language and process</h2>
+        <p class="step-sub" data-i18n="projectLangHint">Goes on line 4. All client-facing deliverables — copy, UI strings, error messages, client docs — are written in this language.</p>
+        <label for="projectLang" data-i18n="projectLangLabel">Project language</label>
+        <select id="projectLang" name="projectLang">
+          <option value="en" selected>en — English</option>
+          <option value="pt-BR">pt-BR — Português (Brasil)</option>
+          <option value="es">es — Español</option>
+        </select>
+        <label id="spLabel" data-i18n="spLabel">Use superpowers on this project?</label>
+        <div class="seg" role="radiogroup" aria-labelledby="spLabel">
+          <span class="choice"><input type="radio" name="superpowers" id="sp-no" value="no" checked>
+            <label class="choice-body" for="sp-no" data-i18n="spNo">No</label></span>
+          <span class="choice"><input type="radio" name="superpowers" id="sp-yes" value="yes">
+            <label class="choice-body" for="sp-yes" data-i18n="spYes">Yes</label></span>
+        </div>
+        <p class="hint" data-i18n-html="spHint"><strong>Yes</strong> for e-commerce and systems (1+ week, interdependent features); <strong>no</strong> for short-deadline landing pages — the overhead does not pay for itself.</p>
+      </section>
 
-          <label for="constraints" data-i18n="constraintsLabel">One constraint per line (optional)</label>
-          <textarea id="constraints" name="constraints" rows="4" placeholder="e.g., hosting only serves static files — no backend&#10;e.g., brand colors #0A3D62 / #F5F5F5 — do not invent a palette" data-i18n-placeholder="constraintsPh"></textarea>
-        </section>
-      </form>
+      <!-- STEP 8 — constraints -->
+      <section class="step-panel" data-step="8" hidden>
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="c7Title">Constraints and notes</h2>
+        <p class="step-sub" data-i18n="c7Sub">Everything Claude needs to know to avoid mistakes: technical limits, closed decisions, integrations.</p>
+        <label for="constraints" data-i18n="constraintsLabel">One constraint per line (optional)</label>
+        <textarea id="constraints" rows="5" placeholder="e.g., hosting only serves static files — no backend&#10;e.g., brand colors #0A3D62 / #F5F5F5 — do not invent a palette" data-i18n-placeholder="constraintsPh"></textarea>
+      </section>
 
-      <!-- Column 2: preview + actions -->
-      <section class="output" aria-labelledby="previewTitle">
-        <h2 id="previewTitle" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" data-i18n="previewTitle">ABOUT.md preview</h2>
+      <!-- STEP 9 — review -->
+      <section class="step-panel" data-step="9" hidden>
+        <span class="step-kicker step-kicker-dyn"></span>
+        <h2 class="step-q" data-i18n="s9Q">Review &amp; download</h2>
         <div class="editor">
           <div class="editor-bar">
-            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="name">ABOUT.md</span>
             <span id="pendingBadge" class="badge pending"></span>
           </div>
           <pre id="preview" tabindex="0" aria-label="Generated ABOUT.md preview" data-i18n-aria="previewAria"></pre>
         </div>
         <div class="actions">
-          <button type="button" id="btnDownload" class="primary" data-i18n="btnDownload">Download ABOUT.md</button>
-          <button type="button" id="btnCopy" class="secondary" data-i18n="btnCopy">Copy</button>
+          <button type="button" id="btnDownload" class="bbtn primary" data-i18n="btnDownload">Download ABOUT.md</button>
+          <button type="button" id="btnCopy" class="bbtn" data-i18n="btnCopy">Copy</button>
           <span id="status" role="status" aria-live="polite"></span>
         </div>
         <p class="footer-hint" data-i18n-html="footerHint">
@@ -735,10 +545,21 @@
           Empty fields come out as <code>[FILL IN]</code> — <code>/new-project</code> detects them and asks only for what is missing.
         </p>
       </section>
-    </main>
+    </form>
 
-    <!-- Guide view: the pocket guide, visual. Mirrors COMMANDS.md at the root. -->
-    <section id="guideView" class="guide" hidden>
+    <nav class="navbar" aria-label="Steps">
+      <div class="navbar-inner">
+        <button type="button" class="bbtn" id="btnBack" data-i18n="btnBack">← Back</button>
+        <div class="nav-mid" id="dots" role="tablist" aria-label="Step list" data-i18n-aria="dotsAria"></div>
+        <span class="enter-hint" data-i18n="enterHint">Enter ↵</span>
+        <button type="button" class="bbtn primary" id="btnNext" data-i18n="btnNext">Next →</button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ===== Guide view ===== -->
+  <div class="guide-scroll" id="guideView" hidden>
+    <section class="guide">
 
       <section class="card">
         <div class="card-head"><span class="card-num" aria-hidden="true">🚀</span><h2 data-i18n="gStartTitle">Starting something?</h2></div>
@@ -801,9 +622,9 @@
       <section class="card">
         <div class="card-head"><span class="card-num" aria-hidden="true">✨</span><h2 data-i18n="gAutoTitle">Things that happen without you asking</h2></div>
         <div>
-          <div class="auto-row"><span class="emoji" aria-hidden="true">🚪</span><span data-i18n="gAuto1">Open a session → the briefing (ABOUT.md) loads into context by itself.</span></div>
-          <div class="auto-row"><span class="emoji" aria-hidden="true">✍️</span><span data-i18n="gAuto2">Edit a file → formatting runs by itself (when the project has Prettier).</span></div>
-          <div class="auto-row"><span class="emoji" aria-hidden="true">🔔</span><span data-i18n="gAuto3">Finish with unreviewed code → one gentle "/review?" nudge per session. Just one.</span></div>
+          <div class="auto-row"><span aria-hidden="true">🚪</span><span data-i18n="gAuto1">Open a session → the briefing (ABOUT.md) loads into context by itself.</span></div>
+          <div class="auto-row"><span aria-hidden="true">✍️</span><span data-i18n="gAuto2">Edit a file → formatting runs by itself (when the project has Prettier).</span></div>
+          <div class="auto-row"><span aria-hidden="true">🔔</span><span data-i18n="gAuto3">Finish with unreviewed code → one gentle "/review?" nudge per session. Just one.</span></div>
         </div>
       </section>
 
@@ -915,36 +736,50 @@
       no: 'declined — short-deadline project; do not install or apply process skills'
     };
 
+    // One loud accent per step — the soft-brutalist signature.
+    var ACCENTS = ['#ff6b57', '#b5e33d', '#4f7dff', '#ffc233', '#ff7ac2', '#39d0c4', '#9d6bff', '#ff9838', '#5be36b'];
+    var TOTAL_STEPS = 9;
+
     // ===== UI i18n dictionary (wizard chrome only — NOT the generated file) =====
-    // v1 note: group/type option labels and the taxonomy stay English in both UI
-    // languages; the PT dictionary translates the main labels, hints and buttons.
     var I18N = {
       en: {
         title: 'ABOUT.md Wizard',
         tagline: 'Project briefing in 2 minutes — without touching any other file',
-        stepsAria: 'How to use in 3 steps',
-        step1: 'Fill in',
-        step2: 'Download to the project root',
-        step3: '<code>/new-project</code> in Claude Code',
         langToggleAria: 'Interface language',
+        viewAria: 'View',
+        tabBriefingB: 'Briefing',
+        tabGuideB: 'Guide',
+        stepOf: 'Step {n} / {total}',
+        dotsAria: 'Step list',
+        goToStep: 'Go to step {n}',
+        btnBack: '← Back',
+        btnNext: 'Next →',
+        btnReview: 'Review ✓',
+        enterHint: 'Enter ↵',
+        s1Q: 'Name the project',
+        s1Sub: 'Client or codename — it becomes the title of ABOUT.md.',
         c1Title: 'What is the project?',
-        c1Sub: 'Pick the group, then the specific type — the right stack comes along for free.',
-        projectNameLabel: 'Project name',
-        projectNamePh: 'e.g., Smile Clinic website',
-        groupLabel: 'Group',
+        s2Sub: 'Pick the group — type and stack follow from it.',
+        gdSite: 'Institutional, landing, blog, events',
+        gdEcom: 'Store, B2B, delivery, subscriptions',
+        gdSys: 'Panels, client areas, CRM, niche',
+        gdApi: 'REST, payments, WhatsApp, ERP',
+        gdAuto: 'Bots, AI chat, routines, data',
+        gdInt: 'Our own tools and scripts',
+        s3Q: 'Which type, exactly?',
         typeLabel: 'Specific type',
         typeHint: 'Group + type go on line 3 of ABOUT.md and guide pack, agents and the process recommendation.',
-        projectLangLabel: 'Project language',
-        projectLangHint: 'Goes on line 4. All client-facing deliverables — copy, UI strings, error messages, client docs — are written in this language.',
-        c2Title: 'Stack (pack)',
-        c2Sub: 'Pre-selected based on the chosen type — change it only if you know why.',
+        suggestedPack: 'Suggested pack: {pack}',
+        changePack: 'change the suggested pack',
         packAria: 'Active pack',
         packNoneDesc: 'Decide later — Claude asks before assuming a stack',
         packStaticDesc: 'Plain HTML/CSS/JS: landing pages, institutional, one-pagers',
         packNextDesc: 'Next.js App Router (TS): e-commerce, systems, blogs',
         packNodeDesc: 'Node.js (TS) backend API/service, separate from the frontend',
         packPyDesc: 'FastAPI, automations, bots and Python scripts',
-        packHint: 'Suggested for "{type}": {pack}. Becomes line 2 of ABOUT.md; switching packs later = editing that single line.',
+        projectNameLabel: 'Project name',
+        projectNamePh: 'e.g., Smile Clinic website',
+        groupLabel: 'Group',
         c3Title: 'Client and goal',
         c3Sub: 'Who the client is and what result the project must produce.',
         clientLabel: 'Client name',
@@ -980,8 +815,9 @@
         cmdTestPh: 'e.g., npm run test — or "none"',
         localUrlLabel: 'Local URL',
         localUrlPh: 'e.g., http://localhost:3000',
-        c6Title: 'Process',
-        c6Sub: 'Superpowers = process skills (brainstorming, written plans, TDD).',
+        s7Q: 'Language and process',
+        projectLangLabel: 'Project language',
+        projectLangHint: 'Goes on line 4. All client-facing deliverables — copy, UI strings, error messages, client docs — are written in this language.',
         spLabel: 'Use superpowers on this project?',
         spNo: 'No',
         spYes: 'Yes',
@@ -990,7 +826,7 @@
         c7Sub: 'Everything Claude needs to know to avoid mistakes: technical limits, closed decisions, integrations.',
         constraintsLabel: 'One constraint per line (optional)',
         constraintsPh: 'e.g., hosting only serves static files — no backend\ne.g., brand colors #0A3D62 / #F5F5F5 — do not invent a palette',
-        previewTitle: 'ABOUT.md preview',
+        s9Q: 'Review & download',
         previewAria: 'Generated ABOUT.md preview',
         btnDownload: 'Download ABOUT.md',
         btnCopy: 'Copy',
@@ -1001,9 +837,6 @@
         statusDownloaded: 'ABOUT.md downloaded — save it in the project root.',
         statusCopied: 'Content copied.',
         statusCopyFailed: 'Could not copy — select the preview and copy manually.',
-        viewAria: 'View',
-        tabBriefing: '✍️ Briefing',
-        tabGuide: '📖 Guide',
         gStartTitle: 'Starting something?',
         gStartSub: 'Find your situation — each one is a 3-step path.',
         gNewTitle: '🆕 Brand-new project',
@@ -1045,29 +878,41 @@
       pt: {
         title: 'Wizard do ABOUT.md',
         tagline: 'Briefing do projeto em 2 minutos — sem tocar em nenhum outro arquivo',
-        stepsAria: 'Como usar em 3 passos',
-        step1: 'Preencher',
-        step2: 'Baixar na raiz do projeto',
-        step3: '<code>/new-project</code> no Claude Code',
         langToggleAria: 'Idioma da interface',
+        viewAria: 'Visualização',
+        tabBriefingB: 'Briefing',
+        tabGuideB: 'Guia',
+        stepOf: 'Etapa {n} / {total}',
+        dotsAria: 'Lista de etapas',
+        goToStep: 'Ir para a etapa {n}',
+        btnBack: '← Voltar',
+        btnNext: 'Avançar →',
+        btnReview: 'Revisar ✓',
+        enterHint: 'Enter ↵',
+        s1Q: 'Dê um nome ao projeto',
+        s1Sub: 'Cliente ou codinome — vira o título do ABOUT.md.',
         c1Title: 'O que é o projeto?',
-        c1Sub: 'Escolha o grupo e depois o tipo específico — a stack certa vem de brinde.',
-        projectNameLabel: 'Nome do projeto',
-        projectNamePh: 'ex.: Site Clínica Sorriso',
-        groupLabel: 'Grupo',
+        s2Sub: 'Escolha o grupo — tipo e stack vêm dele.',
+        gdSite: 'Institucional, landing, blog, eventos',
+        gdEcom: 'Loja, B2B, delivery, assinaturas',
+        gdSys: 'Painéis, áreas logadas, CRM, nicho',
+        gdApi: 'REST, pagamentos, WhatsApp, ERP',
+        gdAuto: 'Bots, chat com IA, rotinas, dados',
+        gdInt: 'Nossas ferramentas e scripts',
+        s3Q: 'Qual tipo, exatamente?',
         typeLabel: 'Tipo específico',
         typeHint: 'Grupo + tipo entram na linha 3 do ABOUT.md e orientam pack, agents e a recomendação de processo.',
-        projectLangLabel: 'Idioma do projeto',
-        projectLangHint: 'Entra na linha 4. Todo material voltado ao cliente — copy, textos de UI, mensagens de erro, docs de cliente — é escrito neste idioma.',
-        c2Title: 'Stack (pack)',
-        c2Sub: 'Pré-selecionada pelo tipo escolhido — troque só se souber por quê.',
+        suggestedPack: 'Pack sugerido: {pack}',
+        changePack: 'trocar o pack sugerido',
         packAria: 'Pack ativo',
         packNoneDesc: 'Decidir depois — o Claude pergunta antes de assumir stack',
         packStaticDesc: 'HTML/CSS/JS puro: landing, institucional, one-pager',
         packNextDesc: 'Next.js App Router (TS): e-commerce, sistemas, blog',
         packNodeDesc: 'API/serviço backend Node.js (TS) separado do frontend',
         packPyDesc: 'FastAPI, automações, bots e scripts Python',
-        packHint: 'Sugerido para "{type}": {pack}. Vira a linha 2 do ABOUT.md; trocar de pack depois = editar essa única linha.',
+        projectNameLabel: 'Nome do projeto',
+        projectNamePh: 'ex.: Site Clínica Sorriso',
+        groupLabel: 'Grupo',
         c3Title: 'Cliente e objetivo',
         c3Sub: 'Quem é o cliente e qual resultado o projeto precisa gerar.',
         clientLabel: 'Nome do cliente',
@@ -1103,8 +948,9 @@
         cmdTestPh: 'ex.: npm run test — ou "não há"',
         localUrlLabel: 'URL local',
         localUrlPh: 'ex.: http://localhost:3000',
-        c6Title: 'Processo',
-        c6Sub: 'Superpowers = skills de processo (brainstorming, planos escritos, TDD).',
+        s7Q: 'Idioma e processo',
+        projectLangLabel: 'Idioma do projeto',
+        projectLangHint: 'Entra na linha 4. Todo material voltado ao cliente — copy, textos de UI, mensagens de erro, docs de cliente — é escrito neste idioma.',
         spLabel: 'Usar superpowers neste projeto?',
         spNo: 'Não',
         spYes: 'Sim',
@@ -1113,7 +959,7 @@
         c7Sub: 'Tudo que o Claude precisa saber para não errar: limites técnicos, decisões fechadas, integrações.',
         constraintsLabel: 'Uma restrição por linha (opcional)',
         constraintsPh: 'ex.: hospedagem só serve arquivos estáticos — nada de backend\nex.: cores da marca #0A3D62 / #F5F5F5 — não inventar paleta',
-        previewTitle: 'Prévia do ABOUT.md',
+        s9Q: 'Revisar e baixar',
         previewAria: 'Prévia do ABOUT.md gerado',
         btnDownload: 'Baixar ABOUT.md',
         btnCopy: 'Copiar',
@@ -1124,9 +970,6 @@
         statusDownloaded: 'ABOUT.md baixado — salve na raiz do projeto.',
         statusCopied: 'Conteúdo copiado.',
         statusCopyFailed: 'Não foi possível copiar — selecione a prévia e copie manualmente.',
-        viewAria: 'Visualização',
-        tabBriefing: '✍️ Briefing',
-        tabGuide: '📖 Guia',
         gStartTitle: 'Começando alguma coisa?',
         gStartSub: 'Ache a sua situação — cada uma é um caminho de 3 passos.',
         gNewTitle: '🆕 Projeto novo em folha',
@@ -1168,6 +1011,7 @@
     };
 
     var uiLang = 'en';
+    var currentStep = 1;
     // True once the user manually picks a project language — the UI toggle then
     // stops changing the select's default.
     var projectLangTouched = false;
@@ -1202,6 +1046,7 @@
       for (i = 0; i < nodes.length; i++) nodes[i].setAttribute('placeholder', t(nodes[i].getAttribute('data-i18n-placeholder')));
       nodes = document.querySelectorAll('[data-i18n-aria]');
       for (i = 0; i < nodes.length; i++) nodes[i].setAttribute('aria-label', t(nodes[i].getAttribute('data-i18n-aria')));
+      renderChrome();
     }
 
     function packForType() {
@@ -1225,16 +1070,10 @@
       }
     }
 
-    function renderPackHint() {
-      $('packHint').textContent = t('packHint')
-        .replace('{type}', $('specificType').value)
-        .replace('{pack}', packForType());
-    }
-
     function applySuggestions(groupChanged) {
       setRadio('pack', packForType());
-      renderPackHint();
       if (groupChanged) setRadio('superpowers', GROUPS[radio('group')].sp);
+      renderChrome();
     }
 
     // Emits the CANONICAL ENGLISH ABOUT.md — headings, parse lines and tone presets
@@ -1303,7 +1142,7 @@
       ].concat(constraints).join('\n') + '\n';
     }
 
-    function refresh() {
+    function refreshPreview() {
       var text = generateAbout();
       $('preview').textContent = text;
       var pending = (text.match(/\[FILL IN\]/g) || []).length;
@@ -1323,51 +1162,104 @@
       notify.t = setTimeout(function () { $('status').textContent = ''; }, 4000);
     }
 
-    // group changes → repopulate types + suggest pack and superpowers
-    var groupRadios = document.querySelectorAll('input[name="group"]');
-    for (var i = 0; i < groupRadios.length; i++) {
-      groupRadios[i].addEventListener('change', function () {
-        populateTypes();
-        applySuggestions(true);
-        refresh();
-      });
+    // ===== Step engine =====
+    var panels = document.querySelectorAll('.step-panel');
+
+    function renderChrome() {
+      // accent rotates per step
+      var accent = ACCENTS[(currentStep - 1) % ACCENTS.length];
+      document.documentElement.style.setProperty('--accent', accent);
+      // kickers
+      var kickers = document.querySelectorAll('.step-kicker-dyn');
+      for (var i = 0; i < kickers.length; i++) {
+        kickers[i].textContent = t('stepOf').replace('{n}', currentStep).replace('{total}', TOTAL_STEPS);
+      }
+      // dots
+      var dots = $('dots');
+      dots.innerHTML = '';
+      for (var n = 1; n <= TOTAL_STEPS; n++) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'dot' + (n < currentStep ? ' done' : '');
+        b.textContent = n;
+        b.setAttribute('aria-label', t('goToStep').replace('{n}', n));
+        if (n === currentStep) b.setAttribute('aria-current', 'step');
+        b.addEventListener('click', (function (target) { return function () { goTo(target); }; })(n));
+        dots.appendChild(b);
+      }
+      // nav buttons
+      $('btnBack').disabled = currentStep === 1;
+      $('btnNext').textContent = (currentStep === TOTAL_STEPS - 1) ? t('btnReview') : t('btnNext');
+      $('btnNext').hidden = currentStep === TOTAL_STEPS;
+      // pack chip
+      $('packChip').textContent = t('suggestedPack').replace('{pack}', radio('pack'));
     }
-    $('specificType').addEventListener('change', function () {
-      applySuggestions(false);
-      refresh();
+
+    function goTo(step) {
+      currentStep = Math.max(1, Math.min(TOTAL_STEPS, step));
+      for (var i = 0; i < panels.length; i++) {
+        panels[i].hidden = Number(panels[i].getAttribute('data-step')) !== currentStep;
+      }
+      if (currentStep === TOTAL_STEPS) refreshPreview();
+      renderChrome();
+      // focus the first control of the step
+      var panel = document.querySelector('.step-panel[data-step="' + currentStep + '"]');
+      var first = panel.querySelector('input:not([type=radio]), select, textarea, input[type=radio]:checked, button');
+      if (first) first.focus({ preventScroll: true });
+    }
+
+    $('btnNext').addEventListener('click', function () { goTo(currentStep + 1); });
+    $('btnBack').addEventListener('click', function () { goTo(currentStep - 1); });
+
+    // Enter advances (except inside the textarea); Shift+Enter never hijacked.
+    $('form').addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' || e.shiftKey) return;
+      if (e.target && e.target.tagName === 'TEXTAREA') return;
+      if (e.target && (e.target.id === 'btnDownload' || e.target.id === 'btnCopy')) return;
+      e.preventDefault();
+      if (currentStep < TOTAL_STEPS) goTo(currentStep + 1);
     });
-
-    $('projectLang').addEventListener('change', function () {
-      projectLangTouched = true;
-    });
-
-    // UI language toggle: retranslates the chrome; the project-language select
-    // follows it only until the user picks a value manually.
-    var uiLangRadios = document.querySelectorAll('input[name="uiLang"]');
-    for (var j = 0; j < uiLangRadios.length; j++) {
-      uiLangRadios[j].addEventListener('change', function () {
-        uiLang = this.value;
-        if (!projectLangTouched) $('projectLang').value = (uiLang === 'pt') ? 'pt-BR' : 'en';
-        applyI18n();
-        renderPackHint();
-        refresh();
-      });
-    }
-
-    // View tabs: Briefing (form + preview) vs Guide (visual pocket guide).
-    var viewRadios = document.querySelectorAll('input[name="view"]');
-    for (var vw = 0; vw < viewRadios.length; vw++) {
-      viewRadios[vw].addEventListener('change', function () {
-        var guide = this.value === 'guide';
-        document.getElementById('briefingView').hidden = guide;
-        document.getElementById('guideView').hidden = !guide;
-      });
-    }
-
-    $('form').addEventListener('input', refresh);
-    $('form').addEventListener('change', refresh);
     $('form').addEventListener('submit', function (e) { e.preventDefault(); });
 
+    // ===== Data listeners =====
+    var groupRadios = document.querySelectorAll('input[name="group"]');
+    for (var gi = 0; gi < groupRadios.length; gi++) {
+      groupRadios[gi].addEventListener('change', function () {
+        populateTypes();
+        applySuggestions(true);
+      });
+    }
+    $('specificType').addEventListener('change', function () { applySuggestions(false); });
+    var packRadios = document.querySelectorAll('input[name="pack"]');
+    for (var pi = 0; pi < packRadios.length; pi++) {
+      packRadios[pi].addEventListener('change', renderChrome);
+    }
+    $('projectLang').addEventListener('change', function () { projectLangTouched = true; });
+
+    // ===== View tabs =====
+    function setView(view) {
+      var guide = view === 'guide';
+      $('briefingView').hidden = guide;
+      $('guideView').hidden = !guide;
+      $('tabBriefing').setAttribute('aria-pressed', String(!guide));
+      $('tabGuide').setAttribute('aria-pressed', String(guide));
+    }
+    $('tabBriefing').addEventListener('click', function () { setView('briefing'); });
+    $('tabGuide').addEventListener('click', function () { setView('guide'); });
+
+    // ===== UI language =====
+    function setLang(lang) {
+      uiLang = lang;
+      $('langEn').setAttribute('aria-pressed', String(lang === 'en'));
+      $('langPt').setAttribute('aria-pressed', String(lang === 'pt'));
+      if (!projectLangTouched) $('projectLang').value = (lang === 'pt') ? 'pt-BR' : 'en';
+      applyI18n();
+      if (currentStep === TOTAL_STEPS) refreshPreview();
+    }
+    $('langEn').addEventListener('click', function () { setLang('en'); });
+    $('langPt').addEventListener('click', function () { setLang('pt'); });
+
+    // ===== Download / copy =====
     $('btnDownload').addEventListener('click', function () {
       var blob = new Blob([generateAbout()], { type: 'text/markdown;charset=utf-8' });
       var url = URL.createObjectURL(blob);
@@ -1404,11 +1296,11 @@
       }
     });
 
-    // initial state
+    // ===== Init =====
     populateTypes();
     applySuggestions(true);
     applyI18n();
-    refresh();
+    goTo(1);
   </script>
 </body>
 </html>
