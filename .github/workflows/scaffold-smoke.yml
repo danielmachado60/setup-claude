@@ -1,0 +1,173 @@
+# Scaffold smoke tests — proves every pack's scaffold works out of the box,
+# following each SCAFFOLD.md to the letter. Runs on every push/PR so the
+# README badge is a live guarantee, and pack contributions can't merge broken.
+name: scaffold-smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  hooks-and-configs:
+    name: hooks & configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - name: JSON configs parse
+        run: node -e "require('./.claude/settings.json'); require('./.mcp.json'); console.log('ok')"
+      - name: session-context hook — template ABOUT (not filled)
+        run: |
+          OUT=$(node .claude/hooks/session-context.js)
+          echo "$OUT"
+          echo "$OUT" | grep -q "not filled in yet"
+      - name: session-context hook — multi-pack + locale
+        run: |
+          mkdir -p /tmp/hooktest/.claude/locales && cd /tmp/hooktest
+          cp "$GITHUB_WORKSPACE/.claude/locales/pt-BR.md" .claude/locales/
+          cp -r "$GITHUB_WORKSPACE/.claude/hooks" .claude/hooks
+          printf '# ABOUT — Test\nActive pack: nextjs + node-api\nType: Web system — Admin panel\nLanguage: pt-BR\n\n- Client: Acme\n' > ABOUT.md
+          OUT=$(node .claude/hooks/session-context.js)
+          echo "$OUT"
+          echo "$OUT" | grep -q "packs/nextjs/PACK.md"
+          echo "$OUT" | grep -q "packs/node-api/PACK.md"
+          echo "$OUT" | grep -q "locales/pt-BR.md"
+      - name: review-reminder hook — never breaks
+        run: |
+          echo '{}' | node .claude/hooks/review-reminder.js
+          echo 'garbage' | node .claude/hooks/review-reminder.js
+          echo '{"stop_hook_active":true}' | node .claude/hooks/review-reminder.js
+
+  node-api:
+    name: pack node-api
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - name: Apply scaffold per SCAFFOLD.md
+        run: |
+          mkdir -p /tmp/app && cp -r .claude/packs/node-api/scaffold/. /tmp/app/
+          cd /tmp/app && rm SCAFFOLD.md
+          mv tsconfig.template.json tsconfig.json
+          mv tsconfig.build.template.json tsconfig.build.json
+          cp .env.example .env
+          npm i fastify zod
+          npm i -D typescript@~6.0.3 @types/node@24 eslint @eslint/js typescript-eslint vitest prettier
+      - name: Checklist — test, typecheck, build, lint
+        working-directory: /tmp/app
+        run: |
+          npm test
+          npm run typecheck
+          npm run build
+          npm run lint
+
+  static:
+    name: pack static
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - name: Serve and verify
+        run: |
+          mkdir -p /tmp/site && cp -r .claude/packs/static/scaffold/. /tmp/site/
+          cd /tmp/site && rm SCAFFOLD.md
+          node --check js/main.js
+          npx -y http-server -p 8481 --silent &
+          sleep 3
+          for path in / /404.html /css/main.css /js/main.js; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8481$path")
+            echo "GET $path -> $code"; test "$code" = "200"
+          done
+          curl -s http://localhost:8481/ | grep -qE "<main"
+          curl -s http://localhost:8481/ | grep -qE "skip"
+
+  nextjs:
+    name: pack nextjs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - name: create-next-app + scaffold overlay per SCAFFOLD.md
+        run: |
+          cd /tmp
+          npx -y create-next-app@latest testapp --ts --eslint --app --src-dir \
+            --import-alias "@/*" --no-tailwind --no-react-compiler --agents-md --turbopack
+          cd testapp
+          SC="$GITHUB_WORKSPACE/.claude/packs/nextjs/scaffold"
+          cp "$SC/.prettierrc" "$SC/.prettierignore" "$SC/.editorconfig" .
+          mkdir -p src/components src/lib
+          cp "$SC/src/components/example-button.tsx" src/components/
+          npm i -D prettier eslint-config-prettier
+          cat > eslint.config.mjs <<'EOF'
+          import { defineConfig, globalIgnores } from 'eslint/config';
+          import nextVitals from 'eslint-config-next/core-web-vitals';
+          import nextTs from 'eslint-config-next/typescript';
+          import prettier from 'eslint-config-prettier/flat';
+
+          const eslintConfig = defineConfig([
+            ...nextVitals,
+            ...nextTs,
+            prettier,
+            globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+          ]);
+
+          export default eslintConfig;
+          EOF
+          node -e "const fs=require('fs');const t=JSON.parse(fs.readFileSync('tsconfig.json','utf8'));Object.assign(t.compilerOptions,{target:'ES2022',noUncheckedIndexedAccess:true,noImplicitOverride:true,noFallthroughCasesInSwitch:true});fs.writeFileSync('tsconfig.json',JSON.stringify(t,null,2));"
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));Object.assign(p.scripts,{lint:'eslint .','format':'prettier --write .','format:check':'prettier --check .',typecheck:'tsc --noEmit'});fs.writeFileSync('package.json',JSON.stringify(p,null,2));"
+      - name: Checklist — format, lint, typecheck, build
+        working-directory: /tmp/testapp
+        run: |
+          npm run format
+          npm run format:check
+          npm run lint
+          npm run typecheck
+          npm run build
+
+  python:
+    name: pack python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: uv init + scaffold overlay per SCAFFOLD.md
+        run: |
+          cd /tmp && uv init testapi && cd testapi
+          SC="$GITHUB_WORKSPACE/.claude/packs/python/scaffold"
+          cp "$SC/pyproject.toml" . && sed -i 's/^name = .*/name = "testapi"/' pyproject.toml
+          rm -rf src main.py; mkdir -p src
+          cp -r "$SC/src/app" src/app
+          cp -r "$SC/tests" tests
+          cp "$SC/.env.example" .env.example && cp .env.example .env
+          cp "$SC/.editorconfig" .
+          grep -q '^\.env$' .gitignore || echo '.env' >> .gitignore
+          uv add "fastapi[standard]"
+          uv add --dev pytest ruff mypy
+      - name: Checklist — pytest, ruff, mypy, live /health
+        working-directory: /tmp/testapi
+        run: |
+          uv run pytest
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run mypy
+          uv run fastapi dev src/app/main.py --port 8482 &
+          for i in $(seq 1 10); do
+            sleep 2
+            R=$(curl -s http://127.0.0.1:8482/health || true)
+            [ -n "$R" ] && break
+          done
+          echo "health: $R"
+          echo "$R" | grep -q '"status":"ok"'

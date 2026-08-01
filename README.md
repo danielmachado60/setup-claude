@@ -7,6 +7,7 @@ fill in one briefing form, and every layer wires itself — specialized agents,
 process skills, automation hooks, MCP servers, stack scaffolds and quality gates.
 You describe the project; the setup configures itself.
 
+[![Scaffold smoke](https://github.com/danielmachado60/setup-claude/actions/workflows/scaffold-smoke.yml/badge.svg)](https://github.com/danielmachado60/setup-claude/actions/workflows/scaffold-smoke.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 
