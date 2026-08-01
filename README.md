@@ -8,7 +8,7 @@ process skills, automation hooks, MCP servers, stack scaffolds and quality gates
 You describe the project; the setup configures itself.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](.github/CONTRIBUTING.md)
 
 ![Briefing wizard](.github/assets/wizard.png)
 
@@ -53,7 +53,7 @@ existing page? `/audit <url>` delivers a prioritized conversion audit first.
 | **Locales** | Deliverable language is per-project config; market knowledge lives in locale files (ships with pt-BR) |
 
 Universal agents work with **any** stack (`Active pack: none`) — packs are the
-included blades, and [adding a pack](CONTRIBUTING.md) is a documented path.
+included blades, and [adding a pack](.github/CONTRIBUTING.md) is a documented path.
 
 ## Requirements
 
